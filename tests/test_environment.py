@@ -4,10 +4,10 @@ Verifies that the Python environment, required packages, and core configuration
 are functioning correctly and reproducible.
 """
 
-import sys
 import importlib
-import pytest
+import sys
 
+import pytest
 
 REQUIRED_PACKAGES = [
     "pandas",
@@ -37,11 +37,11 @@ def test_required_packages_installed(package_name: str):
 def test_project_config_paths():
     """Verify project configuration and directory paths resolution."""
     from financial_risk.config import (
-        PROJECT_ROOT,
-        DATA_RAW_DIR,
-        DATA_PROCESSED_DIR,
         DATA_EXTERNAL_DIR,
+        DATA_PROCESSED_DIR,
+        DATA_RAW_DIR,
         DOCS_DIR,
+        PROJECT_ROOT,
         SQL_DIR,
     )
 
