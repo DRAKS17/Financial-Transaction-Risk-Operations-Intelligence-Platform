@@ -1,0 +1,25 @@
+# Core Data Manipulation & Math
+pandas>=2.2.0
+numpy>=1.26.0
+
+# Visualization
+matplotlib>=3.8.0
+seaborn>=0.13.0
+
+# Machine Learning & Modeling
+scikit-learn>=1.4.0
+
+# Database & SQL Connectivity
+SQLAlchemy>=2.0.0
+psycopg2-binary>=2.9.9
+
+# Environment & Configuration
+python-dotenv>=1.0.0
+
+# Notebooks & Interactive Analytics
+jupyter>=1.0.0
+ipykernel>=6.29.0
+
+# Code Quality & Testing
+pytest>=8.0.0
+ruff>=0.3.0
