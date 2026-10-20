@@ -27,13 +27,14 @@ htmlcov/
 *.pem
 *.key
 
-# Data directories (do not commit raw transaction data or large processed files)
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
-data/external/*
-!data/external/.gitkeep
+# Data directories (do not commit large raw transaction datasets or large processed CSVs)
+data/raw/*.csv
+data/raw/*.tmp
+data/raw/*.zip
+data/raw/*.parquet
+data/processed/*.csv
+data/processed/*.parquet
+data/external/*.csv
 
 # Operating system artifacts
 Thumbs.db

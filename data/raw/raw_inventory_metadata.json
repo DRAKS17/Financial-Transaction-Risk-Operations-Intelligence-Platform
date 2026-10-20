@@ -1,0 +1,55 @@
+{
+  "investigation_cases.csv": {
+    "filename": "investigation_cases.csv",
+    "file_size_bytes": 1087227,
+    "file_size_mb": 1.04,
+    "sha256": "749f6fbefb72acca84d39a2ce9162fc12cd3b61ed8e074af8d03781f1b8c7501",
+    "row_count": 5000,
+    "column_count": 11,
+    "columns": [
+      "case_id",
+      "linked_transaction_id",
+      "tx_step",
+      "tx_type",
+      "tx_amount",
+      "case_created_at",
+      "case_status",
+      "priority",
+      "assigned_team",
+      "investigation_notes",
+      "closed_at"
+    ]
+  },
+  "paysim.csv": {
+    "filename": "paysim.csv",
+    "file_size_bytes": 493534783,
+    "file_size_mb": 470.67,
+    "sha256": "16910f90577b0d981bf8ff289714510bb89bc71bff7d3f220f024e287e4eea6b",
+    "row_count": 6362620,
+    "column_count": 11,
+    "columns": [
+      "step",
+      "type",
+      "amount",
+      "nameOrig",
+      "oldbalanceOrg",
+      "newbalanceOrig",
+      "nameDest",
+      "oldbalanceDest",
+      "newbalanceDest",
+      "isFraud",
+      "isFlaggedFraud"
+    ]
+  },
+  "README.md": {
+    "filename": "README.md",
+    "file_size_bytes": 5461,
+    "file_size_mb": 0.01,
+    "sha256": "d7d685550f149e8a1adc7bad46b2094dbcc8a10fbfaa9375da29cc7305d4dd86",
+    "row_count": 66,
+    "column_count": 1,
+    "columns": [
+      "# Raw Data Inventory & Provenance Guide"
+    ]
+  }
+}
