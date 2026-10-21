@@ -1,0 +1,20 @@
+# Git and IDE
+.git
+.gitignore
+.vscode
+.idea
+
+# Virtual environment and caches
+.venv
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Raw large datasets and uncommitted artifacts
+data/raw/
+data/processed/*.parquet
+data/processed/*.csv
+*.log
+.env

@@ -187,7 +187,9 @@ class RiskExplainabilityEngine:
         if isinstance(transaction_features, dict):
             features_df = pd.DataFrame([transaction_features])[self.FEATURE_COLS]
         elif isinstance(transaction_features, pd.Series):
-            features_df = pd.DataFrame([transaction_features.to_dict()])[self.FEATURE_COLS]
+            features_df = pd.DataFrame([transaction_features.to_dict()])[
+                self.FEATURE_COLS
+            ]
         else:
             features_df = pd.DataFrame(transaction_features, columns=self.FEATURE_COLS)
 
@@ -274,9 +276,7 @@ class RiskExplainabilityEngine:
         logger.info("=" * 80)
 
         t0 = time.time()
-        logger.info(
-            f"Loading test holdout features from {self.features_path}..."
-        )
+        logger.info(f"Loading test holdout features from {self.features_path}...")
         cols_to_load = self.FEATURE_COLS + [
             "transaction_id",
             "day",
@@ -315,7 +315,7 @@ class RiskExplainabilityEngine:
         shap_values_matrix = shap_explanation.values
         dur_shap = time.time() - t_shap0
         logger.info(
-            f"TreeSHAP matrix computed in {dur_shap:.2f}s (throughput: {len(X_sample)/dur_shap:,.1f} tx/sec)"
+            f"TreeSHAP matrix computed in {dur_shap:.2f}s (throughput: {len(X_sample) / dur_shap:,.1f} tx/sec)"
         )
 
         # 2. Global Mean Absolute SHAP Ranking
@@ -358,7 +358,9 @@ class RiskExplainabilityEngine:
 
         # Score test dataset to isolate specific operational archetypes
         test_df["predicted_prob"] = expit(
-            self.model.predict(test_df[self.FEATURE_COLS].astype(np.float32), raw_score=True)
+            self.model.predict(
+                test_df[self.FEATURE_COLS].astype(np.float32), raw_score=True
+            )
         )
 
         # Case 1: High-Value Account Draining Wire Fraud
@@ -384,8 +386,7 @@ class RiskExplainabilityEngine:
 
         # Case 4: Borderline / Operational Triage Investigation Case
         c4_row = test_df[
-            (test_df["isFraud"] == 1)
-            & (test_df["transaction_id"] == 6281485)
+            (test_df["isFraud"] == 1) & (test_df["transaction_id"] == 6281485)
         ].iloc[0]
 
         case_study_rows = [
@@ -462,7 +463,9 @@ class RiskExplainabilityEngine:
         _fig, axes = plt.subplots(2, 2, figsize=(18, 14), dpi=300)
 
         # Subplot 1: Custom Beeswarm Summary (Top 8 features)
-        top_8_indices = [self.FEATURE_COLS.index(r["feature"]) for r in rankings[:8]][::-1]
+        top_8_indices = [self.FEATURE_COLS.index(r["feature"]) for r in rankings[:8]][
+            ::-1
+        ]
         top_8_names = [self.FEATURE_COLS[i] for i in top_8_indices]
 
         y_positions = np.arange(len(top_8_names))
@@ -471,9 +474,7 @@ class RiskExplainabilityEngine:
             f_vals = X_df.iloc[:, feat_idx].to_numpy()
             # Normalize feature values to [0, 1] for colormap
             f_min, f_max = np.percentile(f_vals, [1, 99])
-            norm_vals = np.clip(
-                (f_vals - f_min) / (f_max - f_min + 1e-8), 0.0, 1.0
-            )
+            norm_vals = np.clip((f_vals - f_min) / (f_max - f_min + 1e-8), 0.0, 1.0)
 
             # Subsample 400 dots per feature for clean visualization
             sample_dot_idx = np.random.choice(
@@ -493,7 +494,9 @@ class RiskExplainabilityEngine:
         axes[0, 0].axvline(0, color="black", linestyle="--", linewidth=1, alpha=0.7)
         axes[0, 0].set_yticks(y_positions)
         axes[0, 0].set_yticklabels(top_8_names, fontsize=10, fontweight="bold")
-        axes[0, 0].set_xlabel("SHAP Value (Log-Odds Impact on Model Output)", fontsize=10)
+        axes[0, 0].set_xlabel(
+            "SHAP Value (Log-Odds Impact on Model Output)", fontsize=10
+        )
         axes[0, 0].set_title(
             "Global SHAP Beeswarm Summary (Top 8 Features)",
             fontsize=12,
@@ -552,7 +555,9 @@ class RiskExplainabilityEngine:
             s=20,
         )
         axes[1, 0].axhline(0, color="black", linestyle="--", linewidth=1, alpha=0.7)
-        axes[1, 0].set_xlabel("Signed Log(1 + |Origin Balance Discrepancy|)", fontsize=10)
+        axes[1, 0].set_xlabel(
+            "Signed Log(1 + |Origin Balance Discrepancy|)", fontsize=10
+        )
         axes[1, 0].set_ylabel("SHAP Value for orig_balance_discrepancy", fontsize=10)
         axes[1, 0].set_title(
             "SHAP Dependence: Balance Discrepancy Interaction",
@@ -652,7 +657,9 @@ class RiskExplainabilityEngine:
 
             # Header metadata box
             ground_truth = (
-                "CONFIRMED FRAUD" if data["is_fraud_ground_truth"] == 1 else "LEGITIMATE"
+                "CONFIRMED FRAUD"
+                if data["is_fraud_ground_truth"] == 1
+                else "LEGITIMATE"
             )
             ax.set_title(
                 f"{title}\nTxID: {data['transaction_id']} | Amt: ${data['amount']:,.2f} | "
@@ -670,7 +677,11 @@ class RiskExplainabilityEngine:
                 f"P(Fraud): {final_p:.4%}",
                 transform=ax.transAxes,
                 fontsize=9,
-                bbox={"boxstyle": "round,pad=0.4", "facecolor": "#f0f4f8", "alpha": 0.8},
+                bbox={
+                    "boxstyle": "round,pad=0.4",
+                    "facecolor": "#f0f4f8",
+                    "alpha": 0.8,
+                },
             )
             ax.grid(True, linestyle=":", alpha=0.5, axis="x")
 
@@ -705,7 +716,7 @@ class RiskExplainabilityEngine:
 
         md_content = f"""# Model Explainability & Feature Attribution Report (SHAP & TreeSHAP)
 **Document ID**: `DOC-SHAP-PHASE13`  
-**Generated At**: {meta['timestamp']}  
+**Generated At**: {meta["timestamp"]}  
 **Governance Framework**: Federal Reserve SR 11-7 / OCC 2011-12 & GDPR Article 22 Right to Explanation  
 **Surveillance Domain**: High-Velocity Institutional & Consumer Payments (Paytm, Morgan Stanley, HSBC)
 
@@ -768,11 +779,11 @@ Across a stratified population of test holdout transactions (Days 27–31), Tree
 
 ## 4. Local Transaction Case Studies & Operational Triage
 
-### Case Study 1: High-Value Account Draining Fraud (TxID: `{cases['Case 1: High-Value Account Drain Fraud']['transaction_id']}`)
-- **Transaction Amount**: ${cases['Case 1: High-Value Account Drain Fraud']['amount']:,.2f} (Type: {cases['Case 1: High-Value Account Drain Fraud']['type']})
-- **Predicted Probability**: **{cases['Case 1: High-Value Account Drain Fraud']['predicted_fraud_probability']:.4f}** (Model Output Log-Odds: `{cases['Case 1: High-Value Account Drain Fraud']['model_raw_log_odds']:+.2f}`)
-- **Base Expected Log-Odds**: `{cases['Case 1: High-Value Account Drain Fraud']['base_expected_log_odds']:+.2f}`
-- **Efficiency Axiom Status**: **VERIFIED (Reconstruction Error: {cases['Case 1: High-Value Account Drain Fraud']['reconstruction_error']:.2e})**
+### Case Study 1: High-Value Account Draining Fraud (TxID: `{cases["Case 1: High-Value Account Drain Fraud"]["transaction_id"]}`)
+- **Transaction Amount**: ${cases["Case 1: High-Value Account Drain Fraud"]["amount"]:,.2f} (Type: {cases["Case 1: High-Value Account Drain Fraud"]["type"]})
+- **Predicted Probability**: **{cases["Case 1: High-Value Account Drain Fraud"]["predicted_fraud_probability"]:.4f}** (Model Output Log-Odds: `{cases["Case 1: High-Value Account Drain Fraud"]["model_raw_log_odds"]:+.2f}`)
+- **Base Expected Log-Odds**: `{cases["Case 1: High-Value Account Drain Fraud"]["base_expected_log_odds"]:+.2f}`
+- **Efficiency Axiom Status**: **VERIFIED (Reconstruction Error: {cases["Case 1: High-Value Account Drain Fraud"]["reconstruction_error"]:.2e})**
 - **Top Adverse Reason Codes**:
   1. `RC_LEDGER_DISCREPANCY`: +33.08 log-odds shift (Severe balance discrepancy).
   2. `RC_COMPLETE_DRAIN`: +26.24 log-odds shift (Sender balance zeroed out).
@@ -780,25 +791,25 @@ Across a stratified population of test holdout transactions (Days 27–31), Tree
   4. `RC_EXCESSIVE_BALANCE_RATIO`: +7.91 log-odds shift (Amount equal to 100% of origin balance).
 - **Compliance Triage Outcome**: Immediate priority queue routing for human SAR filing; high confidence account takeover attack.
 
-### Case Study 2: Nocturnal Rapid Transfer Fraud (TxID: `{cases['Case 2: Nocturnal Transfer Fraud (03:00 AM)']['transaction_id']}`)
-- **Transaction Amount**: ${cases['Case 2: Nocturnal Transfer Fraud (03:00 AM)']['amount']:,.2f} at **03:00 AM**
-- **Predicted Probability**: **{cases['Case 2: Nocturnal Transfer Fraud (03:00 AM)']['predicted_fraud_probability']:.4f}**
+### Case Study 2: Nocturnal Rapid Transfer Fraud (TxID: `{cases["Case 2: Nocturnal Transfer Fraud (03:00 AM)"]["transaction_id"]}`)
+- **Transaction Amount**: ${cases["Case 2: Nocturnal Transfer Fraud (03:00 AM)"]["amount"]:,.2f} at **03:00 AM**
+- **Predicted Probability**: **{cases["Case 2: Nocturnal Transfer Fraud (03:00 AM)"]["predicted_fraud_probability"]:.4f}**
 - **Top Adverse Reason Codes**:
   1. `RC_LEDGER_DISCREPANCY`: Positive ledger discrepancy.
   2. `RC_COMPLETE_DRAIN`: Total liquidation of origin account.
   3. `RC_NOCTURNAL_EXECUTION`: High-risk diurnal timing during legitimate user lulls.
 
-### Case Study 3: Benign High-Value Commercial Transaction (TxID: `{cases['Case 3: Benign High-Value Commercial Transaction']['transaction_id']}`)
-- **Transaction Amount**: ${cases['Case 3: Benign High-Value Commercial Transaction']['amount']:,.2f}
-- **Predicted Probability**: **{cases['Case 3: Benign High-Value Commercial Transaction']['predicted_fraud_probability']:.6e}** (Cleared as Legitimate)
+### Case Study 3: Benign High-Value Commercial Transaction (TxID: `{cases["Case 3: Benign High-Value Commercial Transaction"]["transaction_id"]}`)
+- **Transaction Amount**: ${cases["Case 3: Benign High-Value Commercial Transaction"]["amount"]:,.2f}
+- **Predicted Probability**: **{cases["Case 3: Benign High-Value Commercial Transaction"]["predicted_fraud_probability"]:.6e}** (Cleared as Legitimate)
 - **Primary Mitigating Factors**:
   1. Preserved sender liquidity (`orig_depletion_complete = 0`).
   2. Zero balance discrepancy (`orig_balance_discrepancy = 0.00`).
   3. Destination counterparty established business endpoint.
 
-### Case Study 4: Borderline Investigation Triage Case (TxID: `{cases['Case 4: Borderline Triage Investigation Case']['transaction_id']}`)
-- **Transaction Amount**: ${cases['Case 4: Borderline Triage Investigation Case']['amount']:,.2f}
-- **Predicted Probability**: **{cases['Case 4: Borderline Triage Investigation Case']['predicted_fraud_probability']:.6f}**
+### Case Study 4: Borderline Investigation Triage Case (TxID: `{cases["Case 4: Borderline Triage Investigation Case"]["transaction_id"]}`)
+- **Transaction Amount**: ${cases["Case 4: Borderline Triage Investigation Case"]["amount"]:,.2f}
+- **Predicted Probability**: **{cases["Case 4: Borderline Triage Investigation Case"]["predicted_fraud_probability"]:.6f}**
 - **Root Cause Analysis**: At default threshold $\\tau=0.50$, this transaction was missed because the sender retained a balance discrepancy of zero. However, our cost-optimal threshold $\\tau^*=0.14$ successfully captures this case, demonstrating the necessity of threshold optimization guided by SHAP attribution.
 
 ---

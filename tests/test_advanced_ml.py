@@ -80,7 +80,9 @@ def test_resampling_benchmark_metrics(summary_json: dict) -> None:
         assert metrics["pr_auc"] >= 0.90
         assert metrics["roc_auc"] >= 0.95
         assert "brier_score" in metrics
-        assert metrics["metrics_at_optimal_threshold"]["dollar_capture_rate_pct"] >= 95.0
+        assert (
+            metrics["metrics_at_optimal_threshold"]["dollar_capture_rate_pct"] >= 95.0
+        )
         assert metrics["training_time_seconds"] > 0.0
 
 
@@ -157,7 +159,9 @@ def test_stacking_ensemble_loading_and_inference() -> None:
 
 def test_stacking_ensemble_custom_fit_meta() -> None:
     """Verify FinancialStackingEnsemble meta-fitting on simulated validation data."""
-    lr_dummy = LogisticRegression().fit(np.random.randn(20, 16), np.random.randint(0, 2, 20))
+    lr_dummy = LogisticRegression().fit(
+        np.random.randn(20, 16), np.random.randint(0, 2, 20)
+    )
     base = {"LR1": lr_dummy, "LR2": lr_dummy}
     stacker = FinancialStackingEnsemble(base_models=base)
 

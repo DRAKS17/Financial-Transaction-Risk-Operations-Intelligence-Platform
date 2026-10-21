@@ -65,7 +65,8 @@ def get_cached_test_data() -> pd.DataFrame:
     # Pre-score test transactions for instant UI filtering
     engine = get_cached_engine()
     raw_scores = engine.model.predict(
-        test_df[RiskExplainabilityEngine.FEATURE_COLS].astype(np.float32), raw_score=True
+        test_df[RiskExplainabilityEngine.FEATURE_COLS].astype(np.float32),
+        raw_score=True,
     )
     test_df["fraud_probability"] = expit(raw_scores)
     test_df["risk_score"] = np.round(test_df["fraud_probability"] * 1000.0).astype(int)
@@ -121,28 +122,28 @@ def generate_sar_narrative(
 FINANCIAL CRIMES ENFORCEMENT NETWORK (FinCEN) SUSPICIOUS ACTIVITY REPORT (SAR)
 AUTOMATED INVESTIGATOR NARRATIVE EXPORT PACKAGE
 ================================================================================
-REPORT ID          : SAR-{tx['transaction_id']}-{pd.Timestamp.now().strftime('%Y%m%d')}
-DATE GENERATED     : {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S UTC')}
+REPORT ID          : SAR-{tx["transaction_id"]}-{pd.Timestamp.now().strftime("%Y%m%d")}
+DATE GENERATED     : {pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S UTC")}
 FILING INSTITUTION : TIER-1 FINANCIAL SURVEILLANCE & RISK OPERATIONS UNIT
-SUBJECT TRANSACTION: #{tx['transaction_id']}
+SUBJECT TRANSACTION: #{tx["transaction_id"]}
 
 1. TRANSACTION PROFILE
 --------------------------------------------------------------------------------
-Monetary Magnitude : ${tx['amount']:,.2f} USD
-Corridor Typology  : {tx['type']}
-Execution Time     : Day {tx['day']}, {int(tx['hour_of_day']):02d}:00 Hours (Diurnal Risk Window)
-Origin Balance Pre : ${tx['oldbalanceOrg']:,.2f}
-Origin Balance Post: ${tx['newbalanceOrig']:,.2f}
-Origin Discrepancy : ${tx['orig_balance_discrepancy']:,.2f}
-Dest Counterparty  : Recipient Balance: ${tx['newbalanceDest']:,.2f} (Discrepancy: ${tx['dest_balance_discrepancy']:,.2f})
+Monetary Magnitude : ${tx["amount"]:,.2f} USD
+Corridor Typology  : {tx["type"]}
+Execution Time     : Day {tx["day"]}, {int(tx["hour_of_day"]):02d}:00 Hours (Diurnal Risk Window)
+Origin Balance Pre : ${tx["oldbalanceOrg"]:,.2f}
+Origin Balance Post: ${tx["newbalanceOrig"]:,.2f}
+Origin Discrepancy : ${tx["orig_balance_discrepancy"]:,.2f}
+Dest Counterparty  : Recipient Balance: ${tx["newbalanceDest"]:,.2f} (Discrepancy: ${tx["dest_balance_discrepancy"]:,.2f})
 
 2. QUANTITATIVE RISK SCORING & DECISION SUPPORT
 --------------------------------------------------------------------------------
-Predicted Fraud Probability : {explanation['predicted_fraud_probability']:.6f}
-Composite Risk Score        : {round(explanation['predicted_fraud_probability'] * 1000.0)} / 1000
+Predicted Fraud Probability : {explanation["predicted_fraud_probability"]:.6f}
+Composite Risk Score        : {round(explanation["predicted_fraud_probability"] * 1000.0)} / 1000
 Assigned Triage Queue       : PRIORITY_ESCALATION_QUEUE
 Model Version               : Champion LightGBM Tuned (Phase 12 GOSS Architecture)
-Efficiency Axiom Verified   : {explanation['efficiency_axiom_verified']} (Error: {explanation['reconstruction_error']:.2e})
+Efficiency Axiom Verified   : {explanation["efficiency_axiom_verified"]} (Error: {explanation["reconstruction_error"]:.2e})
 
 3. EXCULPATORY & ADVERSE REASON CODES (TreeSHAP ATTRIBUTION)
 --------------------------------------------------------------------------------
@@ -376,7 +377,9 @@ def render_dashboard() -> None:
                     "Maximal Multi-Paradigm Defense",
                 ],
             }
-            st.dataframe(pd.DataFrame(comp_data), use_container_width=True, hide_index=True)
+            st.dataframe(
+                pd.DataFrame(comp_data), use_container_width=True, hide_index=True
+            )
 
         with c_right:
             st.markdown("#### Operational Triage Queue Health (Days 27–31)")
@@ -434,7 +437,8 @@ def render_dashboard() -> None:
         if queue_filter != "ALL QUEUES":
             filtered_df = filtered_df[filtered_df["triage_decision"] == queue_filter]
         filtered_df = filtered_df[
-            (filtered_df["type"].isin(type_filter)) & (filtered_df["amount"] >= min_amount)
+            (filtered_df["type"].isin(type_filter))
+            & (filtered_df["amount"] >= min_amount)
         ]
 
         st.markdown(
@@ -504,7 +508,9 @@ def render_dashboard() -> None:
                 colors = ["#d9381e" if v > 0 else "#1b365d" for v in s_vals]
 
                 fig, ax = plt.subplots(figsize=(8, 4.5), dpi=150)
-                bars = ax.barh(np.arange(len(f_names)), s_vals, color=colors, height=0.55)
+                bars = ax.barh(
+                    np.arange(len(f_names)), s_vals, color=colors, height=0.55
+                )
                 ax.axvline(0, color="black", linestyle="-", linewidth=1)
                 ax.set_yticks(np.arange(len(f_names)))
                 ax.set_yticklabels(f_names, fontsize=9, fontweight="bold")
@@ -566,7 +572,9 @@ def render_dashboard() -> None:
                 color="#d9381e",
                 linewidth=2.5,
             )
-            ax_h.axvspan(1, 5, color="#fecaca", alpha=0.4, label="Night Vulnerability (01-05h)")
+            ax_h.axvspan(
+                1, 5, color="#fecaca", alpha=0.4, label="Night Vulnerability (01-05h)"
+            )
             ax_h.set_title(
                 "Hourly Fraud Prevalence (%) in Test Holdout",
                 fontsize=10,
@@ -679,7 +687,7 @@ def render_dashboard() -> None:
                 color="#d9381e",
                 linestyle="--",
                 linewidth=2,
-                label=f"Cost-Optimal tau* = {best_tau:.3f} (${min_cost/1000.0:,.1f}k)",
+                label=f"Cost-Optimal tau* = {best_tau:.3f} (${min_cost / 1000.0:,.1f}k)",
             )
             ax_s.set_title(
                 "Financial Loss Curve vs Decision Threshold (Test Holdout)",

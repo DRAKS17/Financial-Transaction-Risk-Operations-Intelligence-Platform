@@ -546,14 +546,10 @@ class AdvancedHyperparameterTuningEngine:
                 "num_leaves": trial.suggest_int("num_leaves", 31, 127),
                 "max_depth": trial.suggest_int("max_depth", 5, 10),
                 "min_child_samples": trial.suggest_int("min_child_samples", 20, 100),
-                "colsample_bytree": trial.suggest_float(
-                    "colsample_bytree", 0.6, 1.0
-                ),
+                "colsample_bytree": trial.suggest_float("colsample_bytree", 0.6, 1.0),
                 "reg_alpha": trial.suggest_float("reg_alpha", 1e-3, 5.0, log=True),
                 "reg_lambda": trial.suggest_float("reg_lambda", 1e-3, 5.0, log=True),
-                "scale_pos_weight": trial.suggest_float(
-                    "scale_pos_weight", 5.0, 50.0
-                ),
+                "scale_pos_weight": trial.suggest_float("scale_pos_weight", 5.0, 50.0),
                 "random_state": RANDOM_STATE,
                 "n_jobs": 8,
                 "verbose": -1,
@@ -595,18 +591,12 @@ class AdvancedHyperparameterTuningEngine:
                     "learning_rate", 0.03, 0.15, log=True
                 ),
                 "max_depth": trial.suggest_int("max_depth", 4, 8),
-                "min_child_weight": trial.suggest_float(
-                    "min_child_weight", 1.0, 10.0
-                ),
+                "min_child_weight": trial.suggest_float("min_child_weight", 1.0, 10.0),
                 "subsample": trial.suggest_float("subsample", 0.7, 1.0),
-                "colsample_bytree": trial.suggest_float(
-                    "colsample_bytree", 0.6, 1.0
-                ),
+                "colsample_bytree": trial.suggest_float("colsample_bytree", 0.6, 1.0),
                 "reg_alpha": trial.suggest_float("reg_alpha", 1e-3, 5.0, log=True),
                 "reg_lambda": trial.suggest_float("reg_lambda", 1e-3, 5.0, log=True),
-                "scale_pos_weight": trial.suggest_float(
-                    "scale_pos_weight", 5.0, 50.0
-                ),
+                "scale_pos_weight": trial.suggest_float("scale_pos_weight", 5.0, 50.0),
                 "tree_method": "hist",
                 "random_state": RANDOM_STATE,
                 "n_jobs": 8,
@@ -681,9 +671,7 @@ class AdvancedHyperparameterTuningEngine:
 
         # 4. Train Champion Models on Full Training Partition (6,064,036 rows)
         logger.info("=" * 70)
-        logger.info(
-            "TRAINING CHAMPION TUNED MODELS ON FULL DATASET (6,064,036 rows)"
-        )
+        logger.info("TRAINING CHAMPION TUNED MODELS ON FULL DATASET (6,064,036 rows)")
         logger.info("=" * 70)
 
         logger.info("Training Champion Tuned LightGBM...")
@@ -697,9 +685,7 @@ class AdvancedHyperparameterTuningEngine:
         )
         champion_lgb.fit(X_tr, y_tr)
         dur_lgb = time.time() - t0
-        joblib.dump(
-            champion_lgb, self.models_dir / "champion_lightgbm_tuned.joblib"
-        )
+        joblib.dump(champion_lgb, self.models_dir / "champion_lightgbm_tuned.joblib")
         logger.info(
             f"Saved champion LightGBM to {self.models_dir / 'champion_lightgbm_tuned.joblib'} ({dur_lgb:.2f}s)"
         )
@@ -923,7 +909,10 @@ class AdvancedHyperparameterTuningEngine:
         axes[1, 0].barh(y_pos, [1] * len(param_names), color="#4b6b94", alpha=0.8)
         axes[1, 0].set_yticks(y_pos)
         axes[1, 0].set_yticklabels(
-            [f"{k}: {v:.3g}" if isinstance(v, float) else f"{k}: {v}" for k, v in zip(param_names, param_vals)]
+            [
+                f"{k}: {v:.3g}" if isinstance(v, float) else f"{k}: {v}"
+                for k, v in zip(param_names, param_vals)
+            ]
         )
         axes[1, 0].set_title(
             "Tuned XGBoost Optimal Hyperparameter Vector",
@@ -1015,7 +1004,9 @@ class AdvancedHyperparameterTuningEngine:
         # Subplot 2: Dollar Capture Rate (%) Comparison
         model_names = list(advanced_results.keys())
         capture_rates = [
-            advanced_results[m]["metrics_at_optimal_threshold"]["dollar_capture_rate_pct"]
+            advanced_results[m]["metrics_at_optimal_threshold"][
+                "dollar_capture_rate_pct"
+            ]
             for m in model_names
         ]
         bar_colors = ["#1b365d", "#008080", "#800080"]
@@ -1136,7 +1127,7 @@ class AdvancedHyperparameterTuningEngine:
 
         md_content = f"""# Advanced Machine Learning & Hyperparameter Tuning Report
 **Document ID**: `DOC-AML-PHASE12`  
-**Generated At**: {meta['timestamp']}  
+**Generated At**: {meta["timestamp"]}  
 **Governance Framework**: SR 11-7 / OCC 2011-12 Model Risk Management  
 **Surveillance Domain**: High-Velocity Institutional & Consumer Payments (Paytm, Morgan Stanley, HSBC)
 
@@ -1160,9 +1151,9 @@ To prevent temporal lookahead bias and data leakage, all models were evaluated o
 
 | Partition | Time Range | Transaction Count | Fraud Count | Fraud Prevalence | Fraud Loss Exposure |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Train Set** | Days 01–21 (Steps 1–504) | {meta['train_size']:,} | 5,621 | 0.0927% | $9.721 Billion |
-| **Validation Set** | Days 22–26 (Steps 505–624) | {meta['val_size']:,} | 1,264 | 0.6051% | $1.984 Billion |
-| **Test Set (OOT Holdout)** | Days 27–31 (Steps 625–744) | {meta['test_size']:,} | {meta['test_fraud_count']:,} | 1.4807% | ${meta['test_fraud_exposure']:,.2f} |
+| **Train Set** | Days 01–21 (Steps 1–504) | {meta["train_size"]:,} | 5,621 | 0.0927% | $9.721 Billion |
+| **Validation Set** | Days 22–26 (Steps 505–624) | {meta["val_size"]:,} | 1,264 | 0.6051% | $1.984 Billion |
+| **Test Set (OOT Holdout)** | Days 27–31 (Steps 625–744) | {meta["test_size"]:,} | {meta["test_fraud_count"]:,} | 1.4807% | ${meta["test_fraud_exposure"]:,.2f} |
 
 ---
 
@@ -1172,9 +1163,9 @@ In highly unbalanced financial surveillance (0.0927% fraud rate), standard cross
 
 | Mitigation Strategy | Test PR-AUC | Test ROC-AUC | Brier Score (MSE) | Recall @ $\\tau^*$ | Precision @ $\\tau^*$ | Dollar Capture | Alert Volume | Training Time |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Cost-Sensitive Loss Weighting** | **{resamp['Cost-Sensitive Weighting']['pr_auc']:.4f}** | {resamp['Cost-Sensitive Weighting']['roc_auc']:.4f} | **{resamp['Cost-Sensitive Weighting']['brier_score']:.6f}** | **{resamp['Cost-Sensitive Weighting']['metrics_at_optimal_threshold']['recall']*100:.2f}%** | **{resamp['Cost-Sensitive Weighting']['metrics_at_optimal_threshold']['precision']*100:.2f}%** | **{resamp['Cost-Sensitive Weighting']['metrics_at_optimal_threshold']['dollar_capture_rate_pct']:.2f}%** | {resamp['Cost-Sensitive Weighting']['metrics_at_optimal_threshold']['alert_volume']:,} | **{resamp['Cost-Sensitive Weighting']['training_time_seconds']:.2f}s** |
-| **Random Under-Sampling (RUS 1:10)** | {resamp['Random Under-Sampling']['pr_auc']:.4f} | {resamp['Random Under-Sampling']['roc_auc']:.4f} | {resamp['Random Under-Sampling']['brier_score']:.6f} | {resamp['Random Under-Sampling']['metrics_at_optimal_threshold']['recall']*100:.2f}% | {resamp['Random Under-Sampling']['metrics_at_optimal_threshold']['precision']*100:.2f}% | {resamp['Random Under-Sampling']['metrics_at_optimal_threshold']['dollar_capture_rate_pct']:.2f}% | {resamp['Random Under-Sampling']['metrics_at_optimal_threshold']['alert_volume']:,} | {resamp['Random Under-Sampling']['training_time_seconds']:.2f}s |
-| **SMOTE Oversampling (1:10)** | {resamp['SMOTE Oversampling']['pr_auc']:.4f} | {resamp['SMOTE Oversampling']['roc_auc']:.4f} | {resamp['SMOTE Oversampling']['brier_score']:.6f} | {resamp['SMOTE Oversampling']['metrics_at_optimal_threshold']['recall']*100:.2f}% | {resamp['SMOTE Oversampling']['metrics_at_optimal_threshold']['precision']*100:.2f}% | {resamp['SMOTE Oversampling']['metrics_at_optimal_threshold']['dollar_capture_rate_pct']:.2f}% | {resamp['SMOTE Oversampling']['metrics_at_optimal_threshold']['alert_volume']:,} | {resamp['SMOTE Oversampling']['training_time_seconds']:.2f}s |
+| **Cost-Sensitive Loss Weighting** | **{resamp["Cost-Sensitive Weighting"]["pr_auc"]:.4f}** | {resamp["Cost-Sensitive Weighting"]["roc_auc"]:.4f} | **{resamp["Cost-Sensitive Weighting"]["brier_score"]:.6f}** | **{resamp["Cost-Sensitive Weighting"]["metrics_at_optimal_threshold"]["recall"] * 100:.2f}%** | **{resamp["Cost-Sensitive Weighting"]["metrics_at_optimal_threshold"]["precision"] * 100:.2f}%** | **{resamp["Cost-Sensitive Weighting"]["metrics_at_optimal_threshold"]["dollar_capture_rate_pct"]:.2f}%** | {resamp["Cost-Sensitive Weighting"]["metrics_at_optimal_threshold"]["alert_volume"]:,} | **{resamp["Cost-Sensitive Weighting"]["training_time_seconds"]:.2f}s** |
+| **Random Under-Sampling (RUS 1:10)** | {resamp["Random Under-Sampling"]["pr_auc"]:.4f} | {resamp["Random Under-Sampling"]["roc_auc"]:.4f} | {resamp["Random Under-Sampling"]["brier_score"]:.6f} | {resamp["Random Under-Sampling"]["metrics_at_optimal_threshold"]["recall"] * 100:.2f}% | {resamp["Random Under-Sampling"]["metrics_at_optimal_threshold"]["precision"] * 100:.2f}% | {resamp["Random Under-Sampling"]["metrics_at_optimal_threshold"]["dollar_capture_rate_pct"]:.2f}% | {resamp["Random Under-Sampling"]["metrics_at_optimal_threshold"]["alert_volume"]:,} | {resamp["Random Under-Sampling"]["training_time_seconds"]:.2f}s |
+| **SMOTE Oversampling (1:10)** | {resamp["SMOTE Oversampling"]["pr_auc"]:.4f} | {resamp["SMOTE Oversampling"]["roc_auc"]:.4f} | {resamp["SMOTE Oversampling"]["brier_score"]:.6f} | {resamp["SMOTE Oversampling"]["metrics_at_optimal_threshold"]["recall"] * 100:.2f}% | {resamp["SMOTE Oversampling"]["metrics_at_optimal_threshold"]["precision"] * 100:.2f}% | {resamp["SMOTE Oversampling"]["metrics_at_optimal_threshold"]["dollar_capture_rate_pct"]:.2f}% | {resamp["SMOTE Oversampling"]["metrics_at_optimal_threshold"]["alert_volume"]:,} | {resamp["SMOTE Oversampling"]["training_time_seconds"]:.2f}s |
 
 ### Critical Empirical Insight for Tier-1 Banks:
 - **Why SMOTE is Contraindicated in Transaction Surveillance**: SMOTE interpolates synthetic feature vectors along linear segments between minority fraud instances. In financial accounting, features such as `orig_balance_discrepancy` ($= \\text{{oldbalanceOrg}} - \\text{{amount}} - \\text{{newbalanceOrig}}$) adhere to strict arithmetic conservation laws. SMOTE synthesizes mathematically impossible records where the accounting equations break down, severely distorting posterior probability calibration (evidenced by a markedly worse Brier score).
@@ -1188,26 +1179,26 @@ Using Tree-structured Parzen Estimator (TPE) Bayesian search, we optimized both 
 
 ### Optimal Configurations Discovered:
 - **Champion LightGBM**:
-  - `learning_rate`: `{opt_params['lightgbm']['learning_rate']:.4f}`
-  - `num_leaves`: `{opt_params['lightgbm']['num_leaves']}`
-  - `max_depth`: `{opt_params['lightgbm']['max_depth']}`
-  - `min_child_samples`: `{opt_params['lightgbm']['min_child_samples']}`
-  - `colsample_bytree`: `{opt_params['lightgbm']['colsample_bytree']:.4f}`
-  - `reg_alpha`: `{opt_params['lightgbm']['reg_alpha']:.4e}`
-  - `reg_lambda`: `{opt_params['lightgbm']['reg_lambda']:.4e}`
-  - `scale_pos_weight`: `{opt_params['lightgbm']['scale_pos_weight']:.2f}`
-  - *Best Validation PR-AUC*: **{opt_aucs['lightgbm']:.4f}**
+  - `learning_rate`: `{opt_params["lightgbm"]["learning_rate"]:.4f}`
+  - `num_leaves`: `{opt_params["lightgbm"]["num_leaves"]}`
+  - `max_depth`: `{opt_params["lightgbm"]["max_depth"]}`
+  - `min_child_samples`: `{opt_params["lightgbm"]["min_child_samples"]}`
+  - `colsample_bytree`: `{opt_params["lightgbm"]["colsample_bytree"]:.4f}`
+  - `reg_alpha`: `{opt_params["lightgbm"]["reg_alpha"]:.4e}`
+  - `reg_lambda`: `{opt_params["lightgbm"]["reg_lambda"]:.4e}`
+  - `scale_pos_weight`: `{opt_params["lightgbm"]["scale_pos_weight"]:.2f}`
+  - *Best Validation PR-AUC*: **{opt_aucs["lightgbm"]:.4f}**
 
 - **Champion XGBoost**:
-  - `learning_rate`: `{opt_params['xgboost']['learning_rate']:.4f}`
-  - `max_depth`: `{opt_params['xgboost']['max_depth']}`
-  - `min_child_weight`: `{opt_params['xgboost']['min_child_weight']:.4f}`
-  - `subsample`: `{opt_params['xgboost']['subsample']:.4f}`
-  - `colsample_bytree`: `{opt_params['xgboost']['colsample_bytree']:.4f}`
-  - `reg_alpha`: `{opt_params['xgboost']['reg_alpha']:.4e}`
-  - `reg_lambda`: `{opt_params['xgboost']['reg_lambda']:.4e}`
-  - `scale_pos_weight`: `{opt_params['xgboost']['scale_pos_weight']:.2f}`
-  - *Best Validation PR-AUC*: **{opt_aucs['xgboost']:.4f}**
+  - `learning_rate`: `{opt_params["xgboost"]["learning_rate"]:.4f}`
+  - `max_depth`: `{opt_params["xgboost"]["max_depth"]}`
+  - `min_child_weight`: `{opt_params["xgboost"]["min_child_weight"]:.4f}`
+  - `subsample`: `{opt_params["xgboost"]["subsample"]:.4f}`
+  - `colsample_bytree`: `{opt_params["xgboost"]["colsample_bytree"]:.4f}`
+  - `reg_alpha`: `{opt_params["xgboost"]["reg_alpha"]:.4e}`
+  - `reg_lambda`: `{opt_params["xgboost"]["reg_lambda"]:.4e}`
+  - `scale_pos_weight`: `{opt_params["xgboost"]["scale_pos_weight"]:.2f}`
+  - *Best Validation PR-AUC*: **{opt_aucs["xgboost"]:.4f}**
 
 ---
 
@@ -1228,11 +1219,11 @@ To achieve maximal robustness against concept drift and adversarial evasion, we 
 ### Learned Meta-Classifier Weights:
 | Base Model Family | Paradigm | Learned Meta-Weight | Meta Role / Surveillance Contribution |
 | :--- | :--- | :--- | :--- |
-| **Champion Tuned LightGBM** | Gradient Boosted GOSS Trees | **{stack_weights.get('Champion LightGBM', 0.0):.4f}** | Primary high-nonlinearity detector for depletion anomalies |
-| **Champion Tuned XGBoost** | Histogram Gradient Boosted Trees | **{stack_weights.get('Champion XGBoost', 0.0):.4f}** | High-precision gradient regularizer |
-| **Cost-Sensitive Random Forest** | Bagged Decision Ensembles | **{stack_weights.get('Random Forest', 0.0):.4f}** | Variance reduction & extreme boundary stabilizer |
-| **Decision Tree (Depth=5)** | White-Box Rule Surface | **{stack_weights.get('Decision Tree', 0.0):.4f}** | Baseline accounting discrepancy anchor |
-| **Logistic Regression** | Calibrated Linear Scorecard | **{stack_weights.get('Logistic Regression', 0.0):.4f}** | Baseline monotone prior |
+| **Champion Tuned LightGBM** | Gradient Boosted GOSS Trees | **{stack_weights.get("Champion LightGBM", 0.0):.4f}** | Primary high-nonlinearity detector for depletion anomalies |
+| **Champion Tuned XGBoost** | Histogram Gradient Boosted Trees | **{stack_weights.get("Champion XGBoost", 0.0):.4f}** | High-precision gradient regularizer |
+| **Cost-Sensitive Random Forest** | Bagged Decision Ensembles | **{stack_weights.get("Random Forest", 0.0):.4f}** | Variance reduction & extreme boundary stabilizer |
+| **Decision Tree (Depth=5)** | White-Box Rule Surface | **{stack_weights.get("Decision Tree", 0.0):.4f}** | Baseline accounting discrepancy anchor |
+| **Logistic Regression** | Calibrated Linear Scorecard | **{stack_weights.get("Logistic Regression", 0.0):.4f}** | Baseline monotone prior |
 
 ---
 
@@ -1244,9 +1235,9 @@ All models evaluated at their validation cost-optimal threshold $\\tau^*$:
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Heuristic Baseline (`isFlaggedFraud`)** | 0.0200 | 0.5026 | 0.500 | 0.53% | 100.00% | 1.77% | $2,222,501,378.42 | 7 | $2,222,501,553.42 | Reference Baseline |
 | **Baseline LightGBM (Phase 11 Untuned)** | 0.8810 | 0.9912 | 0.780 | 98.27% | 89.75% | 96.37% | $82,067,324.69 | 1,454 | $82,103,674.69 | $2,140,397,878.73 |
-| **Champion LightGBM Tuned (Phase 12)** | **{adv_models['Champion LightGBM Tuned']['pr_auc']:.4f}** | **{adv_models['Champion LightGBM Tuned']['roc_auc']:.4f}** | {adv_models['Champion LightGBM Tuned']['optimal_threshold_tau']:.3f} | **{adv_models['Champion LightGBM Tuned']['metrics_at_optimal_threshold']['recall']*100:.2f}%** | **{adv_models['Champion LightGBM Tuned']['metrics_at_optimal_threshold']['precision']*100:.2f}%** | **{adv_models['Champion LightGBM Tuned']['metrics_at_optimal_threshold']['dollar_capture_rate_pct']:.2f}%** | **${adv_models['Champion LightGBM Tuned']['metrics_at_optimal_threshold']['dollar_loss_missed']:,.2f}** | {adv_models['Champion LightGBM Tuned']['metrics_at_optimal_threshold']['alert_volume']:,} | **${adv_models['Champion LightGBM Tuned']['metrics_at_optimal_threshold']['total_financial_cost']:,.2f}** | **${2222501553.42 - adv_models['Champion LightGBM Tuned']['metrics_at_optimal_threshold']['total_financial_cost']:,.2f}** |
-| **Champion XGBoost Tuned (Phase 12)** | **{adv_models['Champion XGBoost Tuned']['pr_auc']:.4f}** | **{adv_models['Champion XGBoost Tuned']['roc_auc']:.4f}** | {adv_models['Champion XGBoost Tuned']['optimal_threshold_tau']:.3f} | **{adv_models['Champion XGBoost Tuned']['metrics_at_optimal_threshold']['recall']*100:.2f}%** | **{adv_models['Champion XGBoost Tuned']['metrics_at_optimal_threshold']['precision']*100:.2f}%** | **{adv_models['Champion XGBoost Tuned']['metrics_at_optimal_threshold']['dollar_capture_rate_pct']:.2f}%** | **${adv_models['Champion XGBoost Tuned']['metrics_at_optimal_threshold']['dollar_loss_missed']:,.2f}** | {adv_models['Champion XGBoost Tuned']['metrics_at_optimal_threshold']['alert_volume']:,} | **${adv_models['Champion XGBoost Tuned']['metrics_at_optimal_threshold']['total_financial_cost']:,.2f}** | **${2222501553.42 - adv_models['Champion XGBoost Tuned']['metrics_at_optimal_threshold']['total_financial_cost']:,.2f}** |
-| **Stacking Meta-Learner (Phase 12)** | **{adv_models['Stacking Meta-Learner']['pr_auc']:.4f}** | **{adv_models['Stacking Meta-Learner']['roc_auc']:.4f}** | {adv_models['Stacking Meta-Learner']['optimal_threshold_tau']:.3f} | **{adv_models['Stacking Meta-Learner']['metrics_at_optimal_threshold']['recall']*100:.2f}%** | **{adv_models['Stacking Meta-Learner']['metrics_at_optimal_threshold']['precision']*100:.2f}%** | **{adv_models['Stacking Meta-Learner']['metrics_at_optimal_threshold']['dollar_capture_rate_pct']:.2f}%** | **${adv_models['Stacking Meta-Learner']['metrics_at_optimal_threshold']['dollar_loss_missed']:,.2f}** | {adv_models['Stacking Meta-Learner']['metrics_at_optimal_threshold']['alert_volume']:,} | **${adv_models['Stacking Meta-Learner']['metrics_at_optimal_threshold']['total_financial_cost']:,.2f}** | **${2222501553.42 - adv_models['Stacking Meta-Learner']['metrics_at_optimal_threshold']['total_financial_cost']:,.2f}** |
+| **Champion LightGBM Tuned (Phase 12)** | **{adv_models["Champion LightGBM Tuned"]["pr_auc"]:.4f}** | **{adv_models["Champion LightGBM Tuned"]["roc_auc"]:.4f}** | {adv_models["Champion LightGBM Tuned"]["optimal_threshold_tau"]:.3f} | **{adv_models["Champion LightGBM Tuned"]["metrics_at_optimal_threshold"]["recall"] * 100:.2f}%** | **{adv_models["Champion LightGBM Tuned"]["metrics_at_optimal_threshold"]["precision"] * 100:.2f}%** | **{adv_models["Champion LightGBM Tuned"]["metrics_at_optimal_threshold"]["dollar_capture_rate_pct"]:.2f}%** | **${adv_models["Champion LightGBM Tuned"]["metrics_at_optimal_threshold"]["dollar_loss_missed"]:,.2f}** | {adv_models["Champion LightGBM Tuned"]["metrics_at_optimal_threshold"]["alert_volume"]:,} | **${adv_models["Champion LightGBM Tuned"]["metrics_at_optimal_threshold"]["total_financial_cost"]:,.2f}** | **${2222501553.42 - adv_models["Champion LightGBM Tuned"]["metrics_at_optimal_threshold"]["total_financial_cost"]:,.2f}** |
+| **Champion XGBoost Tuned (Phase 12)** | **{adv_models["Champion XGBoost Tuned"]["pr_auc"]:.4f}** | **{adv_models["Champion XGBoost Tuned"]["roc_auc"]:.4f}** | {adv_models["Champion XGBoost Tuned"]["optimal_threshold_tau"]:.3f} | **{adv_models["Champion XGBoost Tuned"]["metrics_at_optimal_threshold"]["recall"] * 100:.2f}%** | **{adv_models["Champion XGBoost Tuned"]["metrics_at_optimal_threshold"]["precision"] * 100:.2f}%** | **{adv_models["Champion XGBoost Tuned"]["metrics_at_optimal_threshold"]["dollar_capture_rate_pct"]:.2f}%** | **${adv_models["Champion XGBoost Tuned"]["metrics_at_optimal_threshold"]["dollar_loss_missed"]:,.2f}** | {adv_models["Champion XGBoost Tuned"]["metrics_at_optimal_threshold"]["alert_volume"]:,} | **${adv_models["Champion XGBoost Tuned"]["metrics_at_optimal_threshold"]["total_financial_cost"]:,.2f}** | **${2222501553.42 - adv_models["Champion XGBoost Tuned"]["metrics_at_optimal_threshold"]["total_financial_cost"]:,.2f}** |
+| **Stacking Meta-Learner (Phase 12)** | **{adv_models["Stacking Meta-Learner"]["pr_auc"]:.4f}** | **{adv_models["Stacking Meta-Learner"]["roc_auc"]:.4f}** | {adv_models["Stacking Meta-Learner"]["optimal_threshold_tau"]:.3f} | **{adv_models["Stacking Meta-Learner"]["metrics_at_optimal_threshold"]["recall"] * 100:.2f}%** | **{adv_models["Stacking Meta-Learner"]["metrics_at_optimal_threshold"]["precision"] * 100:.2f}%** | **{adv_models["Stacking Meta-Learner"]["metrics_at_optimal_threshold"]["dollar_capture_rate_pct"]:.2f}%** | **${adv_models["Stacking Meta-Learner"]["metrics_at_optimal_threshold"]["dollar_loss_missed"]:,.2f}** | {adv_models["Stacking Meta-Learner"]["metrics_at_optimal_threshold"]["alert_volume"]:,} | **${adv_models["Stacking Meta-Learner"]["metrics_at_optimal_threshold"]["total_financial_cost"]:,.2f}** | **${2222501553.42 - adv_models["Stacking Meta-Learner"]["metrics_at_optimal_threshold"]["total_financial_cost"]:,.2f}** |
 
 ---
 

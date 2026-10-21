@@ -246,7 +246,9 @@ class ModelCache:
         """Transform raw transaction attributes into the 16-feature vector."""
         log_amt = float(np.log1p(tx.amount))
         ratio = float(tx.amount / (tx.oldbalanceOrg + 1e-4))
-        depletion = 1.0 if (tx.newbalanceOrig == 0.0 and tx.oldbalanceOrg > 0.0) else 0.0
+        depletion = (
+            1.0 if (tx.newbalanceOrig == 0.0 and tx.oldbalanceOrg > 0.0) else 0.0
+        )
         orig_disc = float(tx.oldbalanceOrg - tx.amount - tx.newbalanceOrig)
         dest_disc = float(tx.oldbalanceDest + tx.amount - tx.newbalanceDest)
 
@@ -276,9 +278,9 @@ class ModelCache:
             "sin_hour": sin_h,
             "cos_hour": cos_h,
         }
-        return pd.DataFrame([feature_dict])[RiskExplainabilityEngine.FEATURE_COLS].astype(
-            np.float32
-        )
+        return pd.DataFrame([feature_dict])[
+            RiskExplainabilityEngine.FEATURE_COLS
+        ].astype(np.float32)
 
     def determine_triage_decision(
         self,
@@ -589,9 +591,7 @@ def run_latency_benchmark(n_requests: int = 1000) -> dict[str, Any]:
             "median_p50": round(float(np.median(latencies_explain)), 3),
             "p95": round(float(np.percentile(latencies_explain, 95)), 3),
             "p99": round(float(np.percentile(latencies_explain, 99)), 3),
-            "throughput_req_per_sec": round(
-                len(latencies_explain) / dur_exp_total, 1
-            ),
+            "throughput_req_per_sec": round(len(latencies_explain) / dur_exp_total, 1),
         },
     }
 
@@ -613,7 +613,7 @@ def _generate_api_guide(benchmark: dict[str, Any]) -> None:
 
     content = f"""# Real-Time FastAPI Risk Engine & Operational Triage Service Guide
 **Document ID**: `DOC-API-PHASE14`  
-**Generated At**: {benchmark['metadata']['timestamp']}  
+**Generated At**: {benchmark["metadata"]["timestamp"]}  
 **Governance Framework**: Federal Reserve SR 11-7 / OCC 2011-12 & Basel Committee BCBS 239  
 **Surveillance Domain**: High-Velocity Institutional & Consumer Payments (Paytm, Morgan Stanley, HSBC)
 
@@ -625,14 +625,14 @@ Phase 14 operationalizes the **Financial Transaction Risk & Operations Intellige
 
 ### Latency & Throughput Benchmark (1,000 Sequential Requests):
 - **Synchronous Scoring Latency**:
-  - **Median ($p_{{50}}$)**: `{score_lat['median_p50']} ms`
-  - **95th Percentile ($p_{{95}}$)**: `{score_lat['p95']} ms`
-  - **99th Percentile ($p_{{99}}$)**: `{score_lat['p99']} ms`
-  - **Peak Single-Thread Throughput**: **`{score_lat['throughput_req_per_sec']:,} req/sec`**
+  - **Median ($p_{{50}}$)**: `{score_lat["median_p50"]} ms`
+  - **95th Percentile ($p_{{95}}$)**: `{score_lat["p95"]} ms`
+  - **99th Percentile ($p_{{99}}$)**: `{score_lat["p99"]} ms`
+  - **Peak Single-Thread Throughput**: **`{score_lat["throughput_req_per_sec"]:,} req/sec`**
 - **TreeSHAP Explainability Latency**:
-  - **Median ($p_{{50}}$)**: `{exp_lat['median_p50']} ms`
-  - **95th Percentile ($p_{{95}}$)**: `{exp_lat['p95']} ms`
-  - **Peak Throughput**: **`{exp_lat['throughput_req_per_sec']:,} req/sec`**
+  - **Median ($p_{{50}}$)**: `{exp_lat["median_p50"]} ms`
+  - **95th Percentile ($p_{{95}}$)**: `{exp_lat["p95"]} ms`
+  - **Peak Throughput**: **`{exp_lat["throughput_req_per_sec"]:,} req/sec`**
 
 ---
 
@@ -796,7 +796,7 @@ Operational readiness probe for Kubernetes / Docker container health checks.
 
 ### Paytm (Consumer UPI & Wallet Micro-Transactions):
 - **Integration Topology**: Inline sync scoring filter inside the payment routing cluster.
-- **Latency Budget**: Gateway timeout enforced at **10 ms**. With scoring median latency at **{score_lat['median_p50']} ms**, the service consumes less than 5% of the total network roundtrip budget.
+- **Latency Budget**: Gateway timeout enforced at **10 ms**. With scoring median latency at **{score_lat["median_p50"]} ms**, the service consumes less than 5% of the total network roundtrip budget.
 - **Resilience**: In the event of microservice timeout or network partition, fallback fail-open logic routes transactions below USD 500 to post-settlement asynchronous screening, preventing customer checkout drop-off.
 
 ### Morgan Stanley (Fedwire & High-Value Institutional Transfers):
@@ -852,7 +852,9 @@ def main() -> None:
         import uvicorn
 
         logger.info(f"Starting Uvicorn server on http://{args.host}:{args.port}...")
-        uvicorn.run("financial_risk.service:app", host=args.host, port=args.port, reload=False)
+        uvicorn.run(
+            "financial_risk.service:app", host=args.host, port=args.port, reload=False
+        )
 
 
 if __name__ == "__main__":

@@ -170,7 +170,9 @@ def test_explain_endpoint_treeshap_reason_codes(client: TestClient) -> None:
     adverse_codes = data["primary_adverse_reason_codes"]
     assert len(adverse_codes) > 0
     code_names = [c["reason_code"] for c in adverse_codes]
-    assert any("RC_LEDGER_DISCREPANCY" in c or "RC_COMPLETE_DRAIN" in c for c in code_names)
+    assert any(
+        "RC_LEDGER_DISCREPANCY" in c or "RC_COMPLETE_DRAIN" in c for c in code_names
+    )
 
     # Verify all 16 features are present in attribution dictionary
     assert len(data["all_feature_shap_values"]) == 16

@@ -175,5 +175,8 @@ def test_figures_and_documentation_artifacts_exist() -> None:
     assert "Axiomatic Foundations of TreeSHAP" in content
     assert "Global Feature Attribution Hierarchy" in content
     assert "Local Transaction Case Studies & Operational Triage" in content
-    assert "Model Risk Governance & Regulatory Compliance (SR 11-7 / OCC 2011-12)" in content
+    assert (
+        "Model Risk Governance & Regulatory Compliance (SR 11-7 / OCC 2011-12)"
+        in content
+    )
     assert "Tier-1 Financial Institution Interview Q&A" in content
