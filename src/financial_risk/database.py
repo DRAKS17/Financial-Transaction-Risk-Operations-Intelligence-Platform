@@ -6,7 +6,6 @@ and high-performance streaming bulk loading (via PostgreSQL COPY) into Staging a
 
 from __future__ import annotations
 
-import io
 import json
 import logging
 import time
@@ -118,29 +117,79 @@ class FinancialRiskDatabaseManager:
         for script_file in scripts:
             self.execute_sql_file(script_file)
 
-    def copy_df_to_table(
+    def copy_parquet_batch_to_table(
         self,
         cur: psycopg2.extensions.cursor,
         table_name: str,
         columns: list[str],
         df: Any,
     ) -> None:
-        """Stream a pandas DataFrame directly into PostgreSQL using high-throughput COPY."""
-        buffer = io.StringIO()
-        df[columns].to_csv(buffer, index=False, header=False, na_rep="\\N")
-        buffer.seek(0)
+        """Stream a DataFrame directly into PostgreSQL using PyArrow fast CSV serialization and COPY."""
+        import pyarrow as pa
+        import pyarrow.csv as pacsv
 
-        col_identifiers = sql.SQL(", ").join([sql.Identifier(c) for c in columns])
-        table_parts = table_name.split(".")
-        table_sql = sql.SQL(".").join([sql.Identifier(p) for p in table_parts])
+        temp_csv = DATA_PROCESSED_DIR / f"temp_copy_{int(time.time() * 1000)}.csv"
+        try:
+            pa_table = pa.Table.from_pandas(df[columns], preserve_index=False)
+            pacsv.write_csv(pa_table, temp_csv, write_options=pacsv.WriteOptions(include_header=False))
 
-        copy_query = sql.SQL("COPY {} ({}) FROM STDIN WITH (FORMAT CSV, NULL '\\N');").format(
-            table_sql, col_identifiers
-        )
-        cur.copy_expert(copy_query.as_string(cur), buffer)
+            col_identifiers = sql.SQL(", ").join([sql.Identifier(c) for c in columns])
+            table_parts = table_name.split(".")
+            table_sql = sql.SQL(".").join([sql.Identifier(p) for p in table_parts])
 
-    def load_fact_transactions(self, chunk_size: int = 500_000) -> dict[str, Any]:
-        """Stream the 6.36M transactions into core.fact_transactions using chunked COPY."""
+            copy_query = sql.SQL("COPY {} ({}) FROM STDIN WITH (FORMAT CSV, NULL '');").format(
+                table_sql, col_identifiers
+            )
+            with open(temp_csv, "r", encoding="utf-8") as f:
+                cur.copy_expert(copy_query.as_string(cur), f)
+        finally:
+            if temp_csv.exists():
+                temp_csv.unlink()
+
+    def drop_secondary_indexes(self, conn: psycopg2.extensions.connection) -> None:
+        """Drop secondary B-Tree indexes before bulk data loading to maximize ingest velocity."""
+        logger.info("Dropping secondary indexes for high-throughput bulk loading...")
+        drop_statements = """
+            DROP INDEX IF EXISTS core.idx_fact_tx_step;
+            DROP INDEX IF EXISTS core.idx_fact_tx_type;
+            DROP INDEX IF EXISTS core.idx_fact_tx_fraud;
+            DROP INDEX IF EXISTS core.idx_fact_tx_orig;
+            DROP INDEX IF EXISTS core.idx_fact_tx_dest;
+            DROP INDEX IF EXISTS core.idx_fact_tx_composite_risk;
+            DROP INDEX IF EXISTS core.idx_fact_inv_linked_tx;
+            DROP INDEX IF EXISTS core.idx_fact_inv_status;
+            DROP INDEX IF EXISTS core.idx_fact_inv_priority;
+            DROP INDEX IF EXISTS core.idx_fact_inv_team;
+            DROP INDEX IF EXISTS core.idx_fact_inv_sla;
+        """
+        with conn.cursor() as cur:
+            cur.execute(drop_statements)
+        conn.commit()
+
+    def create_secondary_indexes(self, conn: psycopg2.extensions.connection) -> None:
+        """Re-create secondary B-Tree indexes after bulk loading via parallel index builds."""
+        logger.info("Building secondary B-Tree indexes in parallel across loaded facts...")
+        start_idx = time.time()
+        index_statements = """
+            CREATE INDEX idx_fact_tx_step ON core.fact_transactions (step);
+            CREATE INDEX idx_fact_tx_type ON core.fact_transactions (transaction_type);
+            CREATE INDEX idx_fact_tx_fraud ON core.fact_transactions (is_fraud);
+            CREATE INDEX idx_fact_tx_orig ON core.fact_transactions (orig_account_id);
+            CREATE INDEX idx_fact_tx_dest ON core.fact_transactions (dest_account_id);
+            CREATE INDEX idx_fact_tx_composite_risk ON core.fact_transactions (transaction_type, is_fraud, amount);
+            CREATE INDEX idx_fact_inv_linked_tx ON core.fact_investigations (linked_transaction_id);
+            CREATE INDEX idx_fact_inv_status ON core.fact_investigations (case_status);
+            CREATE INDEX idx_fact_inv_priority ON core.fact_investigations (priority);
+            CREATE INDEX idx_fact_inv_team ON core.fact_investigations (assigned_team);
+            CREATE INDEX idx_fact_inv_sla ON core.fact_investigations (is_sla_breached);
+        """
+        with conn.cursor() as cur:
+            cur.execute(index_statements)
+        conn.commit()
+        logger.info(f"All secondary indexes built successfully in {time.time() - start_idx:.2f}s.")
+
+    def load_fact_transactions(self, chunk_size: int = 1_000_000) -> dict[str, Any]:
+        """Stream the 6.36M transactions into core.fact_transactions using chunked PyArrow COPY."""
         logger.info(f"Loading transactions from {self.tx_parquet_path} into core.fact_transactions...")
         start_time = time.time()
 
@@ -148,6 +197,7 @@ class FinancialRiskDatabaseManager:
         total_rows = parquet_file.metadata.num_rows
 
         conn = self.get_connection()
+        self.drop_secondary_indexes(conn)
         loaded_rows = 0
 
         target_columns = [
@@ -205,7 +255,7 @@ class FinancialRiskDatabaseManager:
                     df_chunk["oldbalance_dest"] = df_chunk["oldbalanceDest"]
                     df_chunk["newbalance_dest"] = df_chunk["newbalanceDest"]
 
-                    self.copy_df_to_table(cur, "core.fact_transactions", target_columns, df_chunk)
+                    self.copy_parquet_batch_to_table(cur, "core.fact_transactions", target_columns, df_chunk)
                     loaded_rows += chunk_len
                     logger.info(f"Loaded transaction chunk {batch_idx}: {loaded_rows:,}/{total_rows:,} rows.")
 
@@ -262,8 +312,11 @@ class FinancialRiskDatabaseManager:
         try:
             with conn.cursor() as cur:
                 cur.execute("TRUNCATE TABLE core.fact_investigations CASCADE;")
-                self.copy_df_to_table(cur, "core.fact_investigations", target_columns, df_cases)
+                self.copy_parquet_batch_to_table(cur, "core.fact_investigations", target_columns, df_cases)
                 conn.commit()
+
+            # Rebuild all secondary indexes after both facts are loaded
+            self.create_secondary_indexes(conn)
         except Exception as e:
             conn.rollback()
             logger.error(f"Failed to load fact_investigations: {e}")

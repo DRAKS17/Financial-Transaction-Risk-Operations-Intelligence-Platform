@@ -1,0 +1,36 @@
+{
+  "status": "PASSED",
+  "metrics": {
+    "fact_transactions": {
+      "total_rows": 6362620,
+      "total_gtv": 1144392944759.77,
+      "total_fraud": 8213,
+      "total_flagged": 16
+    },
+    "fact_investigations": {
+      "total_cases": 5000,
+      "closed_cases": 3858,
+      "open_cases": 1142,
+      "sla_breaches": 1384
+    },
+    "dim_date_rows": 744,
+    "dim_transaction_type_rows": 5,
+    "dim_case_status_rows": 4,
+    "dim_priority_rows": 3,
+    "orphan_case_references": 0,
+    "mart_executive_overview_rows": 152,
+    "mart_operations_rows": 20,
+    "mart_channel_exposure_rows": 5
+  },
+  "assertions": {
+    "tx_row_parity": true,
+    "tx_fraud_parity": true,
+    "tx_flagged_parity": true,
+    "gtv_reconciled": true,
+    "cases_row_parity": true,
+    "dim_date_complete": true,
+    "zero_orphan_fks": true,
+    "mart_views_active": true
+  },
+  "validated_at": "2026-10-21 06:58:45 UTC"
+}

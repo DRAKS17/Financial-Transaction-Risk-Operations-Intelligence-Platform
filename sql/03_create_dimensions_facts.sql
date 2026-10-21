@@ -28,7 +28,7 @@ CREATE TABLE core.dim_date (
     day_name                      VARCHAR(10) NOT NULL,
     is_weekend                    BOOLEAN NOT NULL,
     is_night_hours                BOOLEAN NOT NULL,
-    time_window_label             VARCHAR(16) NOT NULL
+    time_window_label             VARCHAR(32) NOT NULL
 );
 
 -- ----------------------------------------------------------------------------
