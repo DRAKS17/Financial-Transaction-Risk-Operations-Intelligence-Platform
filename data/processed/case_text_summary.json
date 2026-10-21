@@ -1,0 +1,30 @@
+{
+  "total_cases_processed": 5000,
+  "execution_duration_seconds": 0.24,
+  "parquet_size_bytes": 257673,
+  "text_quality_audit": {
+    "total_cases_with_notes": 4113,
+    "total_missing_notes": 887,
+    "missing_notes_pct": 17.74,
+    "mean_word_count": 9.9,
+    "mean_char_length": 82.9
+  },
+  "keyword_flag_frequencies": {
+    "flag_account_depletion": 407,
+    "flag_velocity_surge": 423,
+    "flag_compromise_suspected": 810,
+    "flag_balance_discrepancy": 791,
+    "flag_benign_cleared": 833
+  },
+  "operational_metrics": {
+    "closed_cases": 3858,
+    "open_cases": 1142,
+    "sla_breaches": 1384,
+    "sla_breach_rate_pct": 35.87,
+    "turnaround_time_hours": {
+      "mean": 41.61,
+      "median_p50": 24.0,
+      "p90": 120.0
+    }
+  }
+}
