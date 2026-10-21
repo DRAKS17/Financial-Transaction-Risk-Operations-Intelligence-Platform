@@ -1,0 +1,20 @@
+{
+  "total_records": 6362620,
+  "total_features": 33,
+  "total_fraud_labels": 8213,
+  "parquet_size_bytes": 312018503,
+  "parquet_size_mb": 297.56,
+  "execution_duration_seconds": 13.04,
+  "feature_distributions": {
+    "mean_log_amount": 10.841,
+    "depletion_complete_count": 1520581,
+    "transfer_cashout_count": 2770409,
+    "night_transactions_count": 44438,
+    "weekend_transactions_count": 1755606
+  },
+  "temporally_safe_assertions": {
+    "zero_lookahead_leakage": true,
+    "causal_recipient_velocity_tracked": true,
+    "label_parity_verified": true
+  }
+}
