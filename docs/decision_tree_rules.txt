@@ -1,0 +1,37 @@
+|--- orig_balance_discrepancy <= -0.01
+|   |--- dest_balance_discrepancy <= 1342879.25
+|   |   |--- amount_to_orig_balance_ratio <= 94372.00
+|   |   |   |--- cos_hour <= 0.98
+|   |   |   |   |--- amount_to_orig_balance_ratio <= 23291.79
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- amount_to_orig_balance_ratio >  23291.79
+|   |   |   |   |   |--- class: 0
+|   |   |   |--- cos_hour >  0.98
+|   |   |   |   |--- log_amount <= 11.80
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- log_amount >  11.80
+|   |   |   |   |   |--- class: 0
+|   |   |--- amount_to_orig_balance_ratio >  94372.00
+|   |   |   |--- oldbalanceDest <= 45232.99
+|   |   |   |   |--- class: 1
+|   |   |   |--- oldbalanceDest >  45232.99
+|   |   |   |   |--- log_amount <= 11.46
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- log_amount >  11.46
+|   |   |   |   |   |--- class: 0
+|   |--- dest_balance_discrepancy >  1342879.25
+|   |   |--- class: 1
+|--- orig_balance_discrepancy >  -0.01
+|   |--- newbalanceOrig <= 1.00
+|   |   |--- class: 1
+|   |--- newbalanceOrig >  1.00
+|   |   |--- log_amount <= 13.46
+|   |   |   |--- dest_balance_discrepancy <= -237388.96
+|   |   |   |   |--- dest_balance_discrepancy <= -314120.41
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- dest_balance_discrepancy >  -314120.41
+|   |   |   |   |   |--- class: 0
+|   |   |   |--- dest_balance_discrepancy >  -237388.96
+|   |   |   |   |--- class: 0
+|   |   |--- log_amount >  13.46
+|   |   |   |--- class: 1

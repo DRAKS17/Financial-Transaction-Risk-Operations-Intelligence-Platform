@@ -22,6 +22,7 @@ SQL_DIR = PROJECT_ROOT / "sql"
 NOTEBOOKS_DIR = PROJECT_ROOT / "notebooks"
 REPORTS_DIR = PROJECT_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
+MODELS_DIR = PROJECT_ROOT / "models"
 
 # Load .env if present
 ENV_FILE = PROJECT_ROOT / ".env"
