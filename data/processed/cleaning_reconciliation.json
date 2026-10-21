@@ -1,0 +1,33 @@
+{
+  "status": "SUCCESS",
+  "execution_duration_seconds": 12.22,
+  "compression_ratio": "1.36x",
+  "before_cleaning": {
+    "total_rows": 6362620,
+    "total_fraud": 8213,
+    "total_flagged": 16,
+    "total_amount": 1144392944759.7698,
+    "raw_size_bytes": 493534783,
+    "raw_size_mb": 470.67
+  },
+  "after_cleaning": {
+    "total_rows": 6362620,
+    "total_fraud": 8213,
+    "total_flagged": 16,
+    "total_amount": 1144392944759.7698,
+    "dest_merchants": 2151495,
+    "dest_customers": 4211125,
+    "zero_orig_balances": 2102449,
+    "zero_dest_balances": 2704388,
+    "orig_balance_errors": 3678407,
+    "parquet_size_bytes": 362539406,
+    "parquet_size_mb": 345.74
+  },
+  "reconciliation_checks": {
+    "row_count_match": true,
+    "fraud_label_match": true,
+    "flagged_label_match": true,
+    "amount_reconciled": true,
+    "primary_key_generated": true
+  }
+}

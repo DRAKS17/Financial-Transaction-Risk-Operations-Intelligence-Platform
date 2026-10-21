@@ -1,6 +1,7 @@
 # Core Data Manipulation & Math
 pandas>=2.2.0
 numpy>=1.26.0
+pyarrow>=15.0.0
 
 # Visualization
 matplotlib>=3.8.0
