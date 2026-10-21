@@ -1,0 +1,325 @@
+{
+  "metadata": {
+    "total_transactions": 6362620,
+    "fraud_transactions": 8213,
+    "benign_transactions": 6354407,
+    "fraud_prevalence_pct": 0.1291
+  },
+  "mann_whitney_tests": {
+    "amount": {
+      "u_statistic": 41224999611.0,
+      "p_value": 0.0,
+      "rank_biserial_correlation": -0.5798,
+      "is_statistically_significant": true,
+      "fraud_median": 441423.44,
+      "benign_median": 74684.72,
+      "fraud_iqr": 1390680.15,
+      "benign_iqr": 194996.37,
+      "effect_size_magnitude": "Large"
+    },
+    "log_amount": {
+      "u_statistic": 41224998912.0,
+      "p_value": 0.0,
+      "rank_biserial_correlation": -0.5798,
+      "is_statistically_significant": true,
+      "fraud_median": 13.0,
+      "benign_median": 11.22,
+      "fraud_iqr": 2.48,
+      "benign_iqr": 2.75,
+      "effect_size_magnitude": "Large"
+    },
+    "oldbalanceOrg": {
+      "u_statistic": 42337964036.0,
+      "p_value": 0.0,
+      "rank_biserial_correlation": -0.6225,
+      "is_statistically_significant": true,
+      "fraud_median": 438983.45,
+      "benign_median": 14069.0,
+      "fraud_iqr": 1391949.04,
+      "benign_iqr": 106969.5,
+      "effect_size_magnitude": "Large"
+    },
+    "newbalanceOrig": {
+      "u_statistic": 15460387632.5,
+      "p_value": 0.0,
+      "rank_biserial_correlation": 0.4075,
+      "is_statistically_significant": true,
+      "fraud_median": 0.0,
+      "benign_median": 0.0,
+      "fraud_iqr": 0.0,
+      "benign_iqr": 144730.74,
+      "effect_size_magnitude": "Medium"
+    },
+    "orig_balance_discrepancy": {
+      "u_statistic": 46425300992.0,
+      "p_value": 0.0,
+      "rank_biserial_correlation": -0.7791,
+      "is_statistically_significant": true,
+      "fraud_median": 0.0,
+      "benign_median": -69049.31,
+      "fraud_iqr": 0.0,
+      "benign_iqr": 246919.12,
+      "effect_size_magnitude": "Large"
+    },
+    "oldbalanceDest": {
+      "u_statistic": 19183643294.0,
+      "p_value": 0.0,
+      "rank_biserial_correlation": 0.2648,
+      "is_statistically_significant": true,
+      "fraud_median": 0.0,
+      "benign_median": 133311.8,
+      "fraud_iqr": 147828.66,
+      "benign_iqr": 944144.58,
+      "effect_size_magnitude": "Small"
+    },
+    "newbalanceDest": {
+      "u_statistic": 23982267530.0,
+      "p_value": 4.8470570176902227e-39,
+      "rank_biserial_correlation": 0.0809,
+      "is_statistically_significant": true,
+      "fraud_median": 4676.42,
+      "benign_median": 214881.7,
+      "fraud_iqr": 1058725.22,
+      "benign_iqr": 1111975.34,
+      "effect_size_magnitude": "Small"
+    },
+    "dest_balance_discrepancy": {
+      "u_statistic": 34258087936.0,
+      "p_value": 0.0,
+      "rank_biserial_correlation": -0.3129,
+      "is_statistically_significant": true,
+      "fraud_median": 2231.46,
+      "benign_median": 0.0,
+      "fraud_iqr": 442722.0,
+      "benign_iqr": 0.01,
+      "effect_size_magnitude": "Medium"
+    }
+  },
+  "chi_square_tests": {
+    "type": {
+      "chi2_statistic": 22082.54,
+      "p_value": 0.0,
+      "degrees_of_freedom": 4,
+      "cramers_v": 0.0589,
+      "is_statistically_significant": true,
+      "association_strength": "Moderate"
+    },
+    "is_night_hours": {
+      "chi2_statistic": 70043.17,
+      "p_value": 0.0,
+      "degrees_of_freedom": 1,
+      "cramers_v": 0.1049,
+      "is_statistically_significant": true,
+      "association_strength": "Strong"
+    },
+    "is_weekend": {
+      "chi2_statistic": 35.64,
+      "p_value": 2.373638101088057e-09,
+      "degrees_of_freedom": 1,
+      "cramers_v": 0.0024,
+      "is_statistically_significant": true,
+      "association_strength": "Weak"
+    },
+    "orig_depletion_complete": {
+      "chi2_statistic": 24525.49,
+      "p_value": 0.0,
+      "degrees_of_freedom": 1,
+      "cramers_v": 0.0621,
+      "is_statistically_significant": true,
+      "association_strength": "Moderate"
+    },
+    "is_zero_balance_orig": {
+      "chi2_statistic": 3935.29,
+      "p_value": 0.0,
+      "degrees_of_freedom": 1,
+      "cramers_v": 0.0249,
+      "is_statistically_significant": true,
+      "association_strength": "Weak"
+    },
+    "is_merchant_dest": {
+      "chi2_statistic": 4199.99,
+      "p_value": 0.0,
+      "degrees_of_freedom": 1,
+      "cramers_v": 0.0257,
+      "is_statistically_significant": true,
+      "association_strength": "Weak"
+    },
+    "is_transfer_or_cashout": {
+      "chi2_statistic": 10660.73,
+      "p_value": 0.0,
+      "degrees_of_freedom": 1,
+      "cramers_v": 0.0409,
+      "is_statistically_significant": true,
+      "association_strength": "Weak"
+    }
+  },
+  "kolmogorov_smirnov_tests": {
+    "amount": {
+      "ks_statistic_d": 0.4441,
+      "p_value": 0.0,
+      "is_statistically_significant": true,
+      "separation_power": "High (D >= 0.30)"
+    },
+    "log_amount": {
+      "ks_statistic_d": 0.4441,
+      "p_value": 0.0,
+      "is_statistically_significant": true,
+      "separation_power": "High (D >= 0.30)"
+    },
+    "oldbalanceOrg": {
+      "ks_statistic_d": 0.5425,
+      "p_value": 0.0,
+      "is_statistically_significant": true,
+      "separation_power": "Exceptional (D >= 0.50)"
+    },
+    "newbalanceOrig": {
+      "ks_statistic_d": 0.4137,
+      "p_value": 0.0,
+      "is_statistically_significant": true,
+      "separation_power": "High (D >= 0.30)"
+    },
+    "orig_balance_discrepancy": {
+      "ks_statistic_d": 0.8084,
+      "p_value": 0.0,
+      "is_statistically_significant": true,
+      "separation_power": "Exceptional (D >= 0.50)"
+    },
+    "oldbalanceDest": {
+      "ks_statistic_d": 0.2447,
+      "p_value": 0.0,
+      "is_statistically_significant": true,
+      "separation_power": "Moderate (D >= 0.15)"
+    },
+    "newbalanceDest": {
+      "ks_statistic_d": 0.1152,
+      "p_value": 2.445359612168186e-95,
+      "is_statistically_significant": true,
+      "separation_power": "Low"
+    }
+  },
+  "information_values": {
+    "is_transfer_or_cashout": {
+      "information_value": 7.9586,
+      "predictive_tier": "Extraordinary (IV >= 0.50)",
+      "num_bins": 2
+    },
+    "orig_balance_discrepancy": {
+      "information_value": 5.4007,
+      "predictive_tier": "Extraordinary (IV >= 0.50)",
+      "num_bins": 10
+    },
+    "is_merchant_dest": {
+      "information_value": 4.451,
+      "predictive_tier": "Extraordinary (IV >= 0.50)",
+      "num_bins": 2
+    },
+    "orig_depletion_complete": {
+      "information_value": 3.576,
+      "predictive_tier": "Extraordinary (IV >= 0.50)",
+      "num_bins": 2
+    },
+    "newbalanceOrig": {
+      "information_value": 2.4302,
+      "predictive_tier": "Extraordinary (IV >= 0.50)",
+      "num_bins": 5
+    },
+    "oldbalanceOrg": {
+      "information_value": 2.0681,
+      "predictive_tier": "Extraordinary (IV >= 0.50)",
+      "num_bins": 7
+    },
+    "amount": {
+      "information_value": 1.2695,
+      "predictive_tier": "Extraordinary (IV >= 0.50)",
+      "num_bins": 10
+    },
+    "log_amount": {
+      "information_value": 1.2695,
+      "predictive_tier": "Extraordinary (IV >= 0.50)",
+      "num_bins": 10
+    },
+    "is_night_hours": {
+      "information_value": 0.9506,
+      "predictive_tier": "Extraordinary (IV >= 0.50)",
+      "num_bins": 2
+    },
+    "oldbalanceDest": {
+      "information_value": 0.2704,
+      "predictive_tier": "Medium (0.10 <= IV < 0.30)",
+      "num_bins": 6
+    },
+    "dest_inbound_prior_count": {
+      "information_value": 0.1857,
+      "predictive_tier": "Medium (0.10 <= IV < 0.30)",
+      "num_bins": 6
+    },
+    "newbalanceDest": {
+      "information_value": 0.0775,
+      "predictive_tier": "Weak (0.02 <= IV < 0.10)",
+      "num_bins": 7
+    }
+  },
+  "investigation_operations": {
+    "total_cases": 5000,
+    "closed_count": 3858,
+    "open_backlog": 1142,
+    "sla_breach_count": 1384,
+    "overall_sla_breach_rate_pct": 35.87,
+    "turnaround_time_hours": {
+      "mean": 41.61,
+      "median_p50": 24.0,
+      "p90": 120.0
+    },
+    "priority_breakdown": [
+      {
+        "priority": "P1_CRITICAL",
+        "total_cases": 3171,
+        "sla_breaches": 1114,
+        "closed_count": 2547,
+        "breach_rate_pct": 43.74
+      },
+      {
+        "priority": "P2_HIGH",
+        "total_cases": 722,
+        "sla_breaches": 159,
+        "closed_count": 526,
+        "breach_rate_pct": 30.23
+      },
+      {
+        "priority": "P3_STANDARD",
+        "total_cases": 1107,
+        "sla_breaches": 111,
+        "closed_count": 785,
+        "breach_rate_pct": 14.14
+      }
+    ],
+    "squad_breakdown": [
+      {
+        "assigned_team": "Senior Fraud Risk",
+        "total_cases": 1925,
+        "sla_breaches": 632,
+        "mean_tat": 42.46
+      },
+      {
+        "assigned_team": "Special Investigations Unit (SIU)",
+        "total_cases": 1599,
+        "sla_breaches": 562,
+        "mean_tat": 41.49
+      },
+      {
+        "assigned_team": "Tier 1 Operations",
+        "total_cases": 1476,
+        "sla_breaches": 190,
+        "mean_tat": 40.49
+      }
+    ]
+  },
+  "figures_generated": [
+    "fig_01_amount_distribution.png",
+    "fig_02_channel_vulnerability.png",
+    "fig_03_diurnal_hourly_risk.png",
+    "fig_04_correlation_heatmap.png",
+    "fig_05_investigation_operations.png",
+    "fig_06_woe_iv_ranking.png"
+  ]
+}

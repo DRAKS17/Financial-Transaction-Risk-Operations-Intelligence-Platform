@@ -20,6 +20,8 @@ DATA_EXTERNAL_DIR = DATA_DIR / "external"
 DOCS_DIR = PROJECT_ROOT / "docs"
 SQL_DIR = PROJECT_ROOT / "sql"
 NOTEBOOKS_DIR = PROJECT_ROOT / "notebooks"
+REPORTS_DIR = PROJECT_ROOT / "reports"
+FIGURES_DIR = REPORTS_DIR / "figures"
 
 # Load .env if present
 ENV_FILE = PROJECT_ROOT / ".env"
