@@ -16,7 +16,9 @@ def test_cleaned_parquet_file_exists():
     """Verify cleaned Parquet dataset exists and has expected scale."""
     parquet_path = DATA_PROCESSED_DIR / "transactions_cleaned.parquet"
     assert parquet_path.exists(), f"Missing Parquet file at {parquet_path}"
-    assert parquet_path.stat().st_size > 200_000_000, "Parquet file size appears too small."
+    assert parquet_path.stat().st_size > 200_000_000, (
+        "Parquet file size appears too small."
+    )
 
 
 def test_parquet_schema_and_columns():

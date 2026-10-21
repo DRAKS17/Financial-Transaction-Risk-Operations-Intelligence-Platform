@@ -27,10 +27,15 @@ def is_database_accessible():
         return False
 
 
-@pytest.mark.skipif(not is_database_accessible(), reason="PostgreSQL instance not yet connected with local password.")
+@pytest.mark.skipif(
+    not is_database_accessible(),
+    reason="PostgreSQL instance not yet connected with local password.",
+)
 def test_fact_transactions_row_count():
     """Verify core.fact_transactions contains all 6,362,620 loaded transactions."""
-    conn = psycopg2.connect(host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD)
+    conn = psycopg2.connect(
+        host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD
+    )
     try:
         with conn.cursor() as cur:
             cur.execute("SELECT COUNT(*) FROM core.fact_transactions;")
@@ -40,10 +45,15 @@ def test_fact_transactions_row_count():
         conn.close()
 
 
-@pytest.mark.skipif(not is_database_accessible(), reason="PostgreSQL instance not yet connected with local password.")
+@pytest.mark.skipif(
+    not is_database_accessible(),
+    reason="PostgreSQL instance not yet connected with local password.",
+)
 def test_fact_investigations_row_count():
     """Verify core.fact_investigations contains all 5,000 loaded case tickets."""
-    conn = psycopg2.connect(host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD)
+    conn = psycopg2.connect(
+        host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD
+    )
     try:
         with conn.cursor() as cur:
             cur.execute("SELECT COUNT(*) FROM core.fact_investigations;")
@@ -53,10 +63,15 @@ def test_fact_investigations_row_count():
         conn.close()
 
 
-@pytest.mark.skipif(not is_database_accessible(), reason="PostgreSQL instance not yet connected with local password.")
+@pytest.mark.skipif(
+    not is_database_accessible(),
+    reason="PostgreSQL instance not yet connected with local password.",
+)
 def test_database_monetary_parity():
     """Verify total gross transaction value in PostgreSQL matches $1.144 Trillion."""
-    conn = psycopg2.connect(host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD)
+    conn = psycopg2.connect(
+        host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD
+    )
     try:
         with conn.cursor() as cur:
             cur.execute("SELECT SUM(amount) FROM core.fact_transactions;")

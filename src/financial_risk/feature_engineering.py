@@ -20,7 +20,9 @@ import pyarrow.parquet as pq
 
 from financial_risk.config import DATA_PROCESSED_DIR, DOCS_DIR
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -29,9 +31,11 @@ class TransactionFeatureEngineer:
 
     def __init__(
         self,
-        cleaned_parquet_path: Path = DATA_PROCESSED_DIR / "transactions_cleaned.parquet",
+        cleaned_parquet_path: Path = DATA_PROCESSED_DIR
+        / "transactions_cleaned.parquet",
         output_features_path: Path = DATA_PROCESSED_DIR / "features_engineered.parquet",
-        feature_summary_path: Path = DATA_PROCESSED_DIR / "feature_engineering_summary.json",
+        feature_summary_path: Path = DATA_PROCESSED_DIR
+        / "feature_engineering_summary.json",
         feature_dictionary_path: Path = DOCS_DIR / "feature_dictionary.md",
     ):
         self.cleaned_parquet_path = cleaned_parquet_path
@@ -66,7 +70,9 @@ class TransactionFeatureEngineer:
 
         log_amount_sum = 0.0
 
-        for chunk_idx, batch in enumerate(parquet_file.iter_batches(batch_size=chunk_size), start=1):
+        for chunk_idx, batch in enumerate(
+            parquet_file.iter_batches(batch_size=chunk_size), start=1
+        ):
             df_chunk = batch.to_pandas()
             chunk_len = len(df_chunk)
             processed_rows += chunk_len
@@ -86,15 +92,21 @@ class TransactionFeatureEngineer:
 
             # Complete account draining flag: balance went from positive to exactly zero
             orig_depletion_complete = (old_orig > 0.0) & (new_orig == 0.0)
-            feature_stats["depletion_complete_count"] += int(np.sum(orig_depletion_complete))
+            feature_stats["depletion_complete_count"] += int(
+                np.sum(orig_depletion_complete)
+            )
 
             # Destination balance expansion ratio (0 for merchants)
             is_merchant = (df_chunk["dest_type"] == "MERCHANT").values
-            dest_balance_growth_ratio = np.where(is_merchant, 0.0, amount / (old_dest + 1.0))
+            dest_balance_growth_ratio = np.where(
+                is_merchant, 0.0, amount / (old_dest + 1.0)
+            )
 
             # Accounting balance discrepancy vectors
             orig_balance_discrepancy = (old_orig - amount) - new_orig
-            dest_balance_discrepancy = np.where(is_merchant, 0.0, (old_dest + amount) - new_dest)
+            dest_balance_discrepancy = np.where(
+                is_merchant, 0.0, (old_dest + amount) - new_dest
+            )
 
             # 2. Channel & Entity Typology Indicators
             is_transfer = (df_chunk["type"] == "TRANSFER").values
@@ -104,7 +116,9 @@ class TransactionFeatureEngineer:
             is_debit = (df_chunk["type"] == "DEBIT").values
 
             is_transfer_or_cashout = is_transfer | is_cash_out
-            feature_stats["transfer_cashout_count"] += int(np.sum(is_transfer_or_cashout))
+            feature_stats["transfer_cashout_count"] += int(
+                np.sum(is_transfer_or_cashout)
+            )
 
             # 3. Temporal Diurnal & Cyclical Features
             hour = df_chunk["hour_of_day"].values
@@ -156,14 +170,22 @@ class TransactionFeatureEngineer:
                     "log_amount": log_amount.astype(np.float32),
                     "oldbalanceOrg": old_orig,
                     "newbalanceOrig": new_orig,
-                    "amount_to_orig_balance_ratio": amount_to_orig_balance_ratio.astype(np.float32),
+                    "amount_to_orig_balance_ratio": amount_to_orig_balance_ratio.astype(
+                        np.float32
+                    ),
                     "orig_depletion_complete": orig_depletion_complete,
-                    "orig_balance_discrepancy": orig_balance_discrepancy.astype(np.float32),
+                    "orig_balance_discrepancy": orig_balance_discrepancy.astype(
+                        np.float32
+                    ),
                     "is_zero_balance_orig": df_chunk["is_zero_balance_orig"].values,
                     "oldbalanceDest": old_dest,
                     "newbalanceDest": new_dest,
-                    "dest_balance_growth_ratio": dest_balance_growth_ratio.astype(np.float32),
-                    "dest_balance_discrepancy": dest_balance_discrepancy.astype(np.float32),
+                    "dest_balance_growth_ratio": dest_balance_growth_ratio.astype(
+                        np.float32
+                    ),
+                    "dest_balance_discrepancy": dest_balance_discrepancy.astype(
+                        np.float32
+                    ),
                     "is_zero_balance_dest": df_chunk["is_zero_balance_dest"].values,
                     "dest_inbound_prior_count": inbound_prior_counts,
                     "isFlaggedFraud": df_chunk["isFlaggedFraud"].values,
@@ -174,10 +196,14 @@ class TransactionFeatureEngineer:
             # Write chunk to Parquet
             table = pa.Table.from_pandas(feat_df, preserve_index=False)
             if writer is None:
-                writer = pq.ParquetWriter(self.output_features_path, table.schema, compression="snappy")
+                writer = pq.ParquetWriter(
+                    self.output_features_path, table.schema, compression="snappy"
+                )
             writer.write_table(table)
 
-            logger.info(f"Engineered features for chunk {chunk_idx}: {processed_rows:,}/{total_rows:,} rows.")
+            logger.info(
+                f"Engineered features for chunk {chunk_idx}: {processed_rows:,}/{total_rows:,} rows."
+            )
 
         if writer:
             writer.close()

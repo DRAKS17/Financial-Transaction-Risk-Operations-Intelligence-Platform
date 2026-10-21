@@ -28,7 +28,9 @@ from financial_risk.config import (
     SQL_DIR,
 )
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -43,7 +45,8 @@ class FinancialRiskDatabaseManager:
         user: str = DB_USER,
         password: str = DB_PASSWORD,
         tx_parquet_path: Path = DATA_PROCESSED_DIR / "transactions_cleaned.parquet",
-        cases_parquet_path: Path = DATA_PROCESSED_DIR / "investigation_cases_cleaned.parquet",
+        cases_parquet_path: Path = DATA_PROCESSED_DIR
+        / "investigation_cases_cleaned.parquet",
         summary_path: Path = DATA_PROCESSED_DIR / "database_load_summary.json",
         report_path: Path = DOCS_DIR / "database_load_report.md",
     ):
@@ -57,7 +60,9 @@ class FinancialRiskDatabaseManager:
         self.summary_path = summary_path
         self.report_path = report_path
 
-    def get_connection(self, target_db: str | None = None) -> psycopg2.extensions.connection:
+    def get_connection(
+        self, target_db: str | None = None
+    ) -> psycopg2.extensions.connection:
         """Establish a psycopg2 connection to the specified database."""
         db = target_db or self.dbname
         return psycopg2.connect(
@@ -71,17 +76,27 @@ class FinancialRiskDatabaseManager:
 
     def provision_database(self) -> None:
         """Ensure the target analytics database exists; create it if absent."""
-        logger.info(f"Checking existence of database '{self.dbname}' on {self.host}:{self.port}...")
+        logger.info(
+            f"Checking existence of database '{self.dbname}' on {self.host}:{self.port}..."
+        )
         # Connect to maintenance database 'postgres' with autocommit to create target DB
         conn = self.get_connection(target_db="postgres")
         conn.autocommit = True
         try:
             with conn.cursor() as cur:
-                cur.execute("SELECT 1 FROM pg_database WHERE datname = %s;", (self.dbname,))
+                cur.execute(
+                    "SELECT 1 FROM pg_database WHERE datname = %s;", (self.dbname,)
+                )
                 exists = cur.fetchone()
                 if not exists:
-                    logger.info(f"Database '{self.dbname}' does not exist. Creating database...")
-                    cur.execute(sql.SQL("CREATE DATABASE {};").format(sql.Identifier(self.dbname)))
+                    logger.info(
+                        f"Database '{self.dbname}' does not exist. Creating database..."
+                    )
+                    cur.execute(
+                        sql.SQL("CREATE DATABASE {};").format(
+                            sql.Identifier(self.dbname)
+                        )
+                    )
                     logger.info(f"Database '{self.dbname}' created successfully.")
                 else:
                     logger.info(f"Database '{self.dbname}' already exists.")
@@ -131,15 +146,19 @@ class FinancialRiskDatabaseManager:
         temp_csv = DATA_PROCESSED_DIR / f"temp_copy_{int(time.time() * 1000)}.csv"
         try:
             pa_table = pa.Table.from_pandas(df[columns], preserve_index=False)
-            pacsv.write_csv(pa_table, temp_csv, write_options=pacsv.WriteOptions(include_header=False))
+            pacsv.write_csv(
+                pa_table,
+                temp_csv,
+                write_options=pacsv.WriteOptions(include_header=False),
+            )
 
             col_identifiers = sql.SQL(", ").join([sql.Identifier(c) for c in columns])
             table_parts = table_name.split(".")
             table_sql = sql.SQL(".").join([sql.Identifier(p) for p in table_parts])
 
-            copy_query = sql.SQL("COPY {} ({}) FROM STDIN WITH (FORMAT CSV, NULL '');").format(
-                table_sql, col_identifiers
-            )
+            copy_query = sql.SQL(
+                "COPY {} ({}) FROM STDIN WITH (FORMAT CSV, NULL '');"
+            ).format(table_sql, col_identifiers)
             with open(temp_csv, "r", encoding="utf-8") as f:
                 cur.copy_expert(copy_query.as_string(cur), f)
         finally:
@@ -168,7 +187,9 @@ class FinancialRiskDatabaseManager:
 
     def create_secondary_indexes(self, conn: psycopg2.extensions.connection) -> None:
         """Re-create secondary B-Tree indexes after bulk loading via parallel index builds."""
-        logger.info("Building secondary B-Tree indexes in parallel across loaded facts...")
+        logger.info(
+            "Building secondary B-Tree indexes in parallel across loaded facts..."
+        )
         start_idx = time.time()
         index_statements = """
             CREATE INDEX idx_fact_tx_step ON core.fact_transactions (step);
@@ -186,11 +207,15 @@ class FinancialRiskDatabaseManager:
         with conn.cursor() as cur:
             cur.execute(index_statements)
         conn.commit()
-        logger.info(f"All secondary indexes built successfully in {time.time() - start_idx:.2f}s.")
+        logger.info(
+            f"All secondary indexes built successfully in {time.time() - start_idx:.2f}s."
+        )
 
     def load_fact_transactions(self, chunk_size: int = 1_000_000) -> dict[str, Any]:
         """Stream the 6.36M transactions into core.fact_transactions using chunked PyArrow COPY."""
-        logger.info(f"Loading transactions from {self.tx_parquet_path} into core.fact_transactions...")
+        logger.info(
+            f"Loading transactions from {self.tx_parquet_path} into core.fact_transactions..."
+        )
         start_time = time.time()
 
         parquet_file = pq.ParquetFile(self.tx_parquet_path)
@@ -231,7 +256,9 @@ class FinancialRiskDatabaseManager:
                 # Clear target table if repopulating
                 cur.execute("TRUNCATE TABLE core.fact_transactions CASCADE;")
 
-                for batch_idx, batch in enumerate(parquet_file.iter_batches(batch_size=chunk_size), start=1):
+                for batch_idx, batch in enumerate(
+                    parquet_file.iter_batches(batch_size=chunk_size), start=1
+                ):
                     df_chunk = batch.to_pandas()
                     chunk_len = len(df_chunk)
 
@@ -239,13 +266,22 @@ class FinancialRiskDatabaseManager:
                     df_chunk["transaction_type"] = df_chunk["type"]
                     df_chunk["orig_account_id"] = df_chunk["nameOrig"]
                     df_chunk["dest_account_id"] = df_chunk["nameDest"]
-                    df_chunk["log_amount"] = np.log1p(df_chunk["amount"].values).astype(np.float32)
-                    df_chunk["orig_depletion_complete"] = (df_chunk["oldbalanceOrg"].values > 0.0) & (df_chunk["newbalanceOrig"].values == 0.0)
-                    df_chunk["orig_balance_discrepancy"] = (df_chunk["oldbalanceOrg"].values - df_chunk["amount"].values) - df_chunk["newbalanceOrig"].values
+                    df_chunk["log_amount"] = np.log1p(df_chunk["amount"].values).astype(
+                        np.float32
+                    )
+                    df_chunk["orig_depletion_complete"] = (
+                        df_chunk["oldbalanceOrg"].values > 0.0
+                    ) & (df_chunk["newbalanceOrig"].values == 0.0)
+                    df_chunk["orig_balance_discrepancy"] = (
+                        df_chunk["oldbalanceOrg"].values - df_chunk["amount"].values
+                    ) - df_chunk["newbalanceOrig"].values
 
                     is_merchant = (df_chunk["dest_type"] == "MERCHANT").values
                     df_chunk["dest_balance_discrepancy"] = np.where(
-                        is_merchant, 0.0, (df_chunk["oldbalanceDest"].values + df_chunk["amount"].values) - df_chunk["newbalanceDest"].values
+                        is_merchant,
+                        0.0,
+                        (df_chunk["oldbalanceDest"].values + df_chunk["amount"].values)
+                        - df_chunk["newbalanceDest"].values,
                     )
                     df_chunk["dest_inbound_prior_count"] = 0  # baseline initialized
                     df_chunk["is_fraud"] = df_chunk["isFraud"]
@@ -255,9 +291,13 @@ class FinancialRiskDatabaseManager:
                     df_chunk["oldbalance_dest"] = df_chunk["oldbalanceDest"]
                     df_chunk["newbalance_dest"] = df_chunk["newbalanceDest"]
 
-                    self.copy_parquet_batch_to_table(cur, "core.fact_transactions", target_columns, df_chunk)
+                    self.copy_parquet_batch_to_table(
+                        cur, "core.fact_transactions", target_columns, df_chunk
+                    )
                     loaded_rows += chunk_len
-                    logger.info(f"Loaded transaction chunk {batch_idx}: {loaded_rows:,}/{total_rows:,} rows.")
+                    logger.info(
+                        f"Loaded transaction chunk {batch_idx}: {loaded_rows:,}/{total_rows:,} rows."
+                    )
 
                 conn.commit()
         except Exception as e:
@@ -268,12 +308,16 @@ class FinancialRiskDatabaseManager:
             conn.close()
 
         elapsed = time.time() - start_time
-        logger.info(f"Loaded {loaded_rows:,} transactions into core.fact_transactions in {elapsed:.2f}s.")
+        logger.info(
+            f"Loaded {loaded_rows:,} transactions into core.fact_transactions in {elapsed:.2f}s."
+        )
         return {"loaded_rows": loaded_rows, "duration_seconds": round(elapsed, 2)}
 
     def load_fact_investigations(self) -> dict[str, Any]:
         """Load operational case records into core.fact_investigations."""
-        logger.info(f"Loading cases from {self.cases_parquet_path} into core.fact_investigations...")
+        logger.info(
+            f"Loading cases from {self.cases_parquet_path} into core.fact_investigations..."
+        )
         start_time = time.time()
 
         table = pq.read_table(self.cases_parquet_path)
@@ -312,7 +356,9 @@ class FinancialRiskDatabaseManager:
         try:
             with conn.cursor() as cur:
                 cur.execute("TRUNCATE TABLE core.fact_investigations CASCADE;")
-                self.copy_parquet_batch_to_table(cur, "core.fact_investigations", target_columns, df_cases)
+                self.copy_parquet_batch_to_table(
+                    cur, "core.fact_investigations", target_columns, df_cases
+                )
                 conn.commit()
 
             # Rebuild all secondary indexes after both facts are loaded
@@ -325,7 +371,9 @@ class FinancialRiskDatabaseManager:
             conn.close()
 
         elapsed = time.time() - start_time
-        logger.info(f"Loaded {len(df_cases):,} cases into core.fact_investigations in {elapsed:.2f}s.")
+        logger.info(
+            f"Loaded {len(df_cases):,} cases into core.fact_investigations in {elapsed:.2f}s."
+        )
         return {"loaded_rows": len(df_cases), "duration_seconds": round(elapsed, 2)}
 
     def validate_database_load(self) -> dict[str, Any]:
@@ -411,7 +459,9 @@ class FinancialRiskDatabaseManager:
             "tx_row_parity": metrics["fact_transactions"]["total_rows"] == 6_362_620,
             "tx_fraud_parity": metrics["fact_transactions"]["total_fraud"] == 8_213,
             "tx_flagged_parity": metrics["fact_transactions"]["total_flagged"] == 16,
-            "gtv_reconciled": np.isclose(metrics["fact_transactions"]["total_gtv"], 1144392944759.77),
+            "gtv_reconciled": np.isclose(
+                metrics["fact_transactions"]["total_gtv"], 1144392944759.77
+            ),
             "cases_row_parity": metrics["fact_investigations"]["total_cases"] == 5_000,
             "dim_date_complete": metrics["dim_date_rows"] == 744,
             "zero_orphan_fks": metrics["orphan_case_references"] == 0,
@@ -453,8 +503,8 @@ class FinancialRiskDatabaseManager:
 
 **Database**: `{self.dbname}` on `{self.host}:{self.port}`  
 **Warehouse Architecture**: Staging (`stg`), Dimensional Star Schema (`core`), Analytical Marts (`mart`)  
-**Validation Status**: **{val['status']} (All 8 Integrity Assertions Passed)**  
-**Validated At**: {val['validated_at']}  
+**Validation Status**: **{val["status"]} (All 8 Integrity Assertions Passed)**  
+**Validated At**: {val["validated_at"]}  
 
 ---
 
@@ -462,27 +512,27 @@ class FinancialRiskDatabaseManager:
 
 | Target Table / View | Schema | Expected Records | Loaded Records | Verification Status |
 |---|---|---|---|---|
-| `dim_date` | `core` | 744 hours (31 days) | **{m['dim_date_rows']}** | {"✅ PASSED" if a['dim_date_complete'] else "❌ FAILED"} |
-| `dim_transaction_type` | `core` | 5 modalities | **{m['dim_transaction_type_rows']}** | ✅ PASSED |
-| `dim_case_status` | `core` | 4 statuses | **{m['dim_case_status_rows']}** | ✅ PASSED |
-| `dim_priority` | `core` | 3 tiers | **{m['dim_priority_rows']}** | ✅ PASSED |
-| `fact_transactions` | `core` | 6,362,620 rows | **{tx['total_rows']:,}** | {"✅ PASSED (Exact Match)" if a['tx_row_parity'] else "❌ FAILED"} |
-| `fact_investigations` | `core` | 5,000 cases | **{inv['total_cases']:,}** | {"✅ PASSED (Exact Match)" if a['cases_row_parity'] else "❌ FAILED"} |
-| `mart_risk_executive_overview` | `mart` | Active View | **{m['mart_executive_overview_rows']}** aggregate rows | {"✅ PASSED" if a['mart_views_active'] else "❌ FAILED"} |
-| `mart_investigation_operations` | `mart` | Active View | **{m['mart_operations_rows']}** aggregate rows | {"✅ PASSED" if a['mart_views_active'] else "❌ FAILED"} |
-| `mart_channel_exposure` | `mart` | Active View | **{m['mart_channel_exposure_rows']}** channel rows | {"✅ PASSED" if a['mart_views_active'] else "❌ FAILED"} |
+| `dim_date` | `core` | 744 hours (31 days) | **{m["dim_date_rows"]}** | {"✅ PASSED" if a["dim_date_complete"] else "❌ FAILED"} |
+| `dim_transaction_type` | `core` | 5 modalities | **{m["dim_transaction_type_rows"]}** | ✅ PASSED |
+| `dim_case_status` | `core` | 4 statuses | **{m["dim_case_status_rows"]}** | ✅ PASSED |
+| `dim_priority` | `core` | 3 tiers | **{m["dim_priority_rows"]}** | ✅ PASSED |
+| `fact_transactions` | `core` | 6,362,620 rows | **{tx["total_rows"]:,}** | {"✅ PASSED (Exact Match)" if a["tx_row_parity"] else "❌ FAILED"} |
+| `fact_investigations` | `core` | 5,000 cases | **{inv["total_cases"]:,}** | {"✅ PASSED (Exact Match)" if a["cases_row_parity"] else "❌ FAILED"} |
+| `mart_risk_executive_overview` | `mart` | Active View | **{m["mart_executive_overview_rows"]}** aggregate rows | {"✅ PASSED" if a["mart_views_active"] else "❌ FAILED"} |
+| `mart_investigation_operations` | `mart` | Active View | **{m["mart_operations_rows"]}** aggregate rows | {"✅ PASSED" if a["mart_views_active"] else "❌ FAILED"} |
+| `mart_channel_exposure` | `mart` | Active View | **{m["mart_channel_exposure_rows"]}** channel rows | {"✅ PASSED" if a["mart_views_active"] else "❌ FAILED"} |
 
 ---
 
 ## 2. Financial Parity & Metric Reconciliation
 
-- **Gross Transaction Value (GTV)**: **${tx['total_gtv']:,.2f}** (Exact parity with raw ledger, variance: $0.00).
-- **Ground-Truth Fraud Volume**: **{tx['total_fraud']:,} frauds** (Prevalence: {tx['total_fraud'] / tx['total_rows'] * 100:.4f}%).
-- **Legacy Heuristic Rule Flags**: **{tx['total_flagged']:,} flags**.
+- **Gross Transaction Value (GTV)**: **${tx["total_gtv"]:,.2f}** (Exact parity with raw ledger, variance: $0.00).
+- **Ground-Truth Fraud Volume**: **{tx["total_fraud"]:,} frauds** (Prevalence: {tx["total_fraud"] / tx["total_rows"] * 100:.4f}%).
+- **Legacy Heuristic Rule Flags**: **{tx["total_flagged"]:,} flags**.
 - **Referential Integrity**: **0 orphan records** (Every single `linked_transaction_id` in `fact_investigations` references an active `fact_transactions` row).
-- **Active Operational Backlog**: **{inv['open_cases']:,} open cases** ({inv['open_cases'] / inv['total_cases'] * 100:.1f}%).
-- **Closed Cases**: **{inv['closed_cases']:,} closed cases**.
-- **Operational SLA Breaches**: **{inv['sla_breaches']:,} breached cases** ({inv['sla_breaches'] / inv['closed_cases'] * 100:.1f}% breach rate).
+- **Active Operational Backlog**: **{inv["open_cases"]:,} open cases** ({inv["open_cases"] / inv["total_cases"] * 100:.1f}%).
+- **Closed Cases**: **{inv["closed_cases"]:,} closed cases**.
+- **Operational SLA Breaches**: **{inv["sla_breaches"]:,} breached cases** ({inv["sla_breaches"] / inv["closed_cases"] * 100:.1f}% breach rate).
 
 ---
 

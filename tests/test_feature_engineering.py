@@ -97,7 +97,13 @@ def test_feature_mathematical_bounds():
     # Read first 10,000 rows to test bounds efficiently
     table = pq.read_table(
         parquet_path,
-        columns=["log_amount", "sin_hour", "cos_hour", "day_of_week", "amount_to_orig_balance_ratio"],
+        columns=[
+            "log_amount",
+            "sin_hour",
+            "cos_hour",
+            "day_of_week",
+            "amount_to_orig_balance_ratio",
+        ],
     )
     df_sample = table.slice(0, 10_000).to_pandas()
 

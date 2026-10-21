@@ -47,7 +47,11 @@ def test_project_config_paths():
 
     assert PROJECT_ROOT.exists(), f"Project root does not exist: {PROJECT_ROOT}"
     assert DATA_RAW_DIR.exists(), f"Raw data directory does not exist: {DATA_RAW_DIR}"
-    assert DATA_PROCESSED_DIR.exists(), f"Processed data dir does not exist: {DATA_PROCESSED_DIR}"
-    assert DATA_EXTERNAL_DIR.exists(), f"External data dir does not exist: {DATA_EXTERNAL_DIR}"
+    assert DATA_PROCESSED_DIR.exists(), (
+        f"Processed data dir does not exist: {DATA_PROCESSED_DIR}"
+    )
+    assert DATA_EXTERNAL_DIR.exists(), (
+        f"External data dir does not exist: {DATA_EXTERNAL_DIR}"
+    )
     assert DOCS_DIR.exists(), f"Docs dir does not exist: {DOCS_DIR}"
     assert SQL_DIR.exists(), f"SQL dir does not exist: {SQL_DIR}"

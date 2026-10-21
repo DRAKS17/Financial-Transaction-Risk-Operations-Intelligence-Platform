@@ -68,7 +68,9 @@ def test_sentinel_imputation_for_missing_notes():
     assert len(missing_subset) > 0
 
     # Verify all missing notes were imputed with sentinel
-    assert (missing_subset["cleaned_investigation_notes"] == "[NO NOTES RECORDED]").all()
+    assert (
+        missing_subset["cleaned_investigation_notes"] == "[NO NOTES RECORDED]"
+    ).all()
     assert (missing_subset["note_word_count"] == 0).all()
     assert (missing_subset["note_char_length"] == 0).all()
 

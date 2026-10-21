@@ -15,14 +15,18 @@ def test_paysim_raw_file_presence_and_size():
     paysim_path = DATA_RAW_DIR / "paysim.csv"
     assert paysim_path.exists(), f"Missing PaySim file at {paysim_path}"
     # PaySim CSV is ~493.5 MB
-    assert paysim_path.stat().st_size > 400_000_000, "PaySim file appears incomplete or truncated."
+    assert paysim_path.stat().st_size > 400_000_000, (
+        "PaySim file appears incomplete or truncated."
+    )
 
 
 def test_investigations_raw_file_presence():
     """Verify synthetic operational case log CSV exists and is populated."""
     cases_path = DATA_RAW_DIR / "investigation_cases.csv"
     assert cases_path.exists(), f"Missing investigation cases file at {cases_path}"
-    assert cases_path.stat().st_size > 50_000, "Investigation cases file appears incomplete."
+    assert cases_path.stat().st_size > 50_000, (
+        "Investigation cases file appears incomplete."
+    )
 
 
 def test_sha256_hashing_function(tmp_path):
@@ -43,7 +47,9 @@ def test_raw_inventory_metadata_validity():
         data = json.load(f)
 
     assert "paysim.csv" in data, "paysim.csv missing from inventory metadata"
-    assert "investigation_cases.csv" in data, "investigation_cases.csv missing from metadata"
+    assert "investigation_cases.csv" in data, (
+        "investigation_cases.csv missing from metadata"
+    )
 
     paysim_meta = data["paysim.csv"]
     assert paysim_meta["row_count"] > 6_000_000, "Unexpected row count for PaySim"
@@ -52,6 +58,8 @@ def test_raw_inventory_metadata_validity():
     assert "isFlaggedFraud" in paysim_meta["columns"]
 
     cases_meta = data["investigation_cases.csv"]
-    assert cases_meta["row_count"] >= 1000, "Unexpected row count for investigation cases"
+    assert cases_meta["row_count"] >= 1000, (
+        "Unexpected row count for investigation cases"
+    )
     assert "case_id" in cases_meta["columns"]
     assert "linked_transaction_id" in cases_meta["columns"]

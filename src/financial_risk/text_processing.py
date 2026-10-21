@@ -26,7 +26,9 @@ import pyarrow.parquet as pq
 
 from financial_risk.config import DATA_PROCESSED_DIR, DATA_RAW_DIR, DOCS_DIR
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -35,11 +37,32 @@ class CaseTextProcessor:
 
     # Transparent, auditable keyword patterns for issue categorization
     KEYWORD_PATTERNS: ClassVar[dict[str, list[str]]] = {
-        "flag_account_depletion": [r"\bdeplet", r"\bdrain", r"\brapid account", r"\bbalance wiped"],
-        "flag_velocity_surge": [r"\bvelocity", r"\bsurge", r"\bunusual velocity", r"\bburst"],
-        "flag_compromise_suspected": [r"\bunauthorized", r"\bcompromise", r"\btakeover", r"\bfreez"],
+        "flag_account_depletion": [
+            r"\bdeplet",
+            r"\bdrain",
+            r"\brapid account",
+            r"\bbalance wiped",
+        ],
+        "flag_velocity_surge": [
+            r"\bvelocity",
+            r"\bsurge",
+            r"\bunusual velocity",
+            r"\bburst",
+        ],
+        "flag_compromise_suspected": [
+            r"\bunauthorized",
+            r"\bcompromise",
+            r"\btakeover",
+            r"\bfreez",
+        ],
         "flag_balance_discrepancy": [r"\bdiscrepanc", r"\bmismatch", r"\bmismatched"],
-        "flag_benign_cleared": [r"\bfalse alert", r"\bcommercial payroll", r"\bordinary commercial", r"\bcleared", r"\bauthorized via"],
+        "flag_benign_cleared": [
+            r"\bfalse alert",
+            r"\bcommercial payroll",
+            r"\bordinary commercial",
+            r"\bcleared",
+            r"\bauthorized via",
+        ],
     }
 
     # SLA thresholds in hours by priority tier
@@ -52,7 +75,8 @@ class CaseTextProcessor:
     def __init__(
         self,
         raw_cases_path: Path = DATA_RAW_DIR / "investigation_cases.csv",
-        output_parquet_path: Path = DATA_PROCESSED_DIR / "investigation_cases_cleaned.parquet",
+        output_parquet_path: Path = DATA_PROCESSED_DIR
+        / "investigation_cases_cleaned.parquet",
         summary_json_path: Path = DATA_PROCESSED_DIR / "case_text_summary.json",
         report_path: Path = DOCS_DIR / "text_processing_report.md",
     ):
@@ -100,14 +124,20 @@ class CaseTextProcessor:
                 c_len = len(norm)
                 words = norm.split()
                 w_count = len(words)
-                avg_w_len = round(sum(len(w) for w in words) / w_count, 2) if w_count > 0 else 0.0
+                avg_w_len = (
+                    round(sum(len(w) for w in words) / w_count, 2)
+                    if w_count > 0
+                    else 0.0
+                )
 
                 char_lengths.append(c_len)
                 word_counts.append(w_count)
                 avg_word_lengths.append(avg_w_len)
 
         # 2. Transparent Rule-Based Keyword Indicators
-        keyword_flags: dict[str, list[bool]] = {flag: [] for flag in self.KEYWORD_PATTERNS}
+        keyword_flags: dict[str, list[bool]] = {
+            flag: [] for flag in self.KEYWORD_PATTERNS
+        }
         for note in cleaned_notes:
             note_lower = note.lower()
             for flag, patterns in self.KEYWORD_PATTERNS.items():
@@ -183,15 +213,29 @@ class CaseTextProcessor:
                 "total_cases_with_notes": int(has_notes.sum()),
                 "total_missing_notes": missing_count,
                 "missing_notes_pct": round((missing_count / total_cases) * 100, 2),
-                "mean_word_count": round(float(np.mean([w for w in word_counts if w > 0])), 1) if any(word_counts) else 0.0,
-                "mean_char_length": round(float(np.mean([c for c in char_lengths if c > 0])), 1) if any(char_lengths) else 0.0,
+                "mean_word_count": round(
+                    float(np.mean([w for w in word_counts if w > 0])), 1
+                )
+                if any(word_counts)
+                else 0.0,
+                "mean_char_length": round(
+                    float(np.mean([c for c in char_lengths if c > 0])), 1
+                )
+                if any(char_lengths)
+                else 0.0,
             },
-            "keyword_flag_frequencies": {flag: int(sum(vals)) for flag, vals in keyword_flags.items()},
+            "keyword_flag_frequencies": {
+                flag: int(sum(vals)) for flag, vals in keyword_flags.items()
+            },
             "operational_metrics": {
                 "closed_cases": int(is_closed.sum()),
                 "open_cases": int((~is_closed).sum()),
                 "sla_breaches": int(is_sla_breached.sum()),
-                "sla_breach_rate_pct": round((int(is_sla_breached.sum()) / int(is_closed.sum())) * 100, 2) if is_closed.sum() > 0 else 0.0,
+                "sla_breach_rate_pct": round(
+                    (int(is_sla_breached.sum()) / int(is_closed.sum())) * 100, 2
+                )
+                if is_closed.sum() > 0
+                else 0.0,
                 "turnaround_time_hours": {
                     "mean": round(tat_mean, 2),
                     "median_p50": round(tat_p50, 2),
@@ -223,8 +267,8 @@ class CaseTextProcessor:
         report = f"""# Operational Case & Unstructured Text Processing Report
 
 **Pipeline Component**: NLP & Case Management Normalization Engine  
-**Execution Duration**: {summary['execution_duration_seconds']} seconds  
-**Source Dataset**: `data/raw/investigation_cases.csv` ({summary['total_cases_processed']:,} tickets)  
+**Execution Duration**: {summary["execution_duration_seconds"]} seconds  
+**Source Dataset**: `data/raw/investigation_cases.csv` ({summary["total_cases_processed"]:,} tickets)  
 **Output Target**: `data/processed/investigation_cases_cleaned.parquet`  
 
 ---
@@ -233,8 +277,8 @@ class CaseTextProcessor:
 
 | Dimension | Raw Input Value | Normalized Value / Treatment | Assessment |
 |---|---|---|---|
-| **Total Case Records** | {summary['total_cases_processed']:,} | {summary['total_cases_processed']:,} | 100% record retention |
-| **Missing Investigation Notes** | {tq['total_missing_notes']:,} ({tq['missing_notes_pct']}%) | Imputed with `'[NO NOTES RECORDED]'` + `has_notes=False` | Handled via sentinel imputation |
+| **Total Case Records** | {summary["total_cases_processed"]:,} | {summary["total_cases_processed"]:,} | 100% record retention |
+| **Missing Investigation Notes** | {tq["total_missing_notes"]:,} ({tq["missing_notes_pct"]}%) | Imputed with `'[NO NOTES RECORDED]'` + `has_notes=False` | Handled via sentinel imputation |
 | **Whitespace Irregularities** | Trailing/leading tabs, multiple spaces | Normalized to single space via regex `\\s+` | Standardized formatting |
 | **Original Text Preservation** | Free text | Preserved in `raw_investigation_notes` | Full audit trail retained |
 | **Quantitative Text Metrics** | None | `note_char_length`, `note_word_count`, `note_avg_word_length` | Extracted for operations BI |
@@ -247,11 +291,11 @@ Rule-based regex matching extracted transparent domain indicators from qualitati
 
 | Extracted Category Flag | Matching Patterns | Total Cases Tagged | % of Documented Cases | Operational Context |
 |---|---|---|---|---|
-| `flag_compromise_suspected` | `unauthorized`, `compromise`, `takeover`, `freeze` | **{kf['flag_compromise_suspected']:,}** | {kf['flag_compromise_suspected'] / tq['total_cases_with_notes'] * 100:.1f}% | Credential theft or unauthorized device access |
-| `flag_account_depletion` | `depletion`, `drain`, `rapid account`, `wiped` | **{kf['flag_account_depletion']:,}** | {kf['flag_account_depletion'] / tq['total_cases_with_notes'] * 100:.1f}% | Complete balance drainage attempts |
-| `flag_velocity_surge` | `velocity`, `surge`, `unusual velocity`, `burst` | **{kf['flag_velocity_surge']:,}** | {kf['flag_velocity_surge'] / tq['total_cases_with_notes'] * 100:.1f}% | Frequency threshold spike within single step |
-| `flag_balance_discrepancy` | `discrepancy`, `mismatch`, `mismatched` | **{kf['flag_balance_discrepancy']:,}** | {kf['flag_balance_discrepancy'] / tq['total_cases_with_notes'] * 100:.1f}% | Accounting variance in settlement ledger |
-| `flag_benign_cleared` | `false alert`, `commercial payroll`, `cleared`, `authorized` | **{kf['flag_benign_cleared']:,}** | {kf['flag_benign_cleared'] / tq['total_cases_with_notes'] * 100:.1f}% | Case verified as legitimate commercial flow |
+| `flag_compromise_suspected` | `unauthorized`, `compromise`, `takeover`, `freeze` | **{kf["flag_compromise_suspected"]:,}** | {kf["flag_compromise_suspected"] / tq["total_cases_with_notes"] * 100:.1f}% | Credential theft or unauthorized device access |
+| `flag_account_depletion` | `depletion`, `drain`, `rapid account`, `wiped` | **{kf["flag_account_depletion"]:,}** | {kf["flag_account_depletion"] / tq["total_cases_with_notes"] * 100:.1f}% | Complete balance drainage attempts |
+| `flag_velocity_surge` | `velocity`, `surge`, `unusual velocity`, `burst` | **{kf["flag_velocity_surge"]:,}** | {kf["flag_velocity_surge"] / tq["total_cases_with_notes"] * 100:.1f}% | Frequency threshold spike within single step |
+| `flag_balance_discrepancy` | `discrepancy`, `mismatch`, `mismatched` | **{kf["flag_balance_discrepancy"]:,}** | {kf["flag_balance_discrepancy"] / tq["total_cases_with_notes"] * 100:.1f}% | Accounting variance in settlement ledger |
+| `flag_benign_cleared` | `false alert`, `commercial payroll`, `cleared`, `authorized` | **{kf["flag_benign_cleared"]:,}** | {kf["flag_benign_cleared"] / tq["total_cases_with_notes"] * 100:.1f}% | Case verified as legitimate commercial flow |
 
 > [!NOTE]
 > **Limitations of Keyword-Derived Indicators**:
@@ -261,12 +305,12 @@ Rule-based regex matching extracted transparent domain indicators from qualitati
 
 ## 3. Operational Investigation Metrics & SLA Compliance
 
-- **Closed Cases**: **{op['closed_cases']:,}** ({op['closed_cases'] / summary['total_cases_processed'] * 100:.1f}%)
-- **Active / Open Backlog**: **{op['open_cases']:,}** ({op['open_cases'] / summary['total_cases_processed'] * 100:.1f}%)
-- **Median Turnaround Time (p50)**: **{tat['median_p50']} hours**
-- **Mean Turnaround Time**: **{tat['mean']} hours**
-- **90th Percentile Turnaround Time (p90)**: **{tat['p90']} hours**
-- **SLA Breaches**: **{op['sla_breaches']:,} cases** breached the operational SLA threshold ({op['sla_breach_rate_pct']}% of closed cases).
+- **Closed Cases**: **{op["closed_cases"]:,}** ({op["closed_cases"] / summary["total_cases_processed"] * 100:.1f}%)
+- **Active / Open Backlog**: **{op["open_cases"]:,}** ({op["open_cases"] / summary["total_cases_processed"] * 100:.1f}%)
+- **Median Turnaround Time (p50)**: **{tat["median_p50"]} hours**
+- **Mean Turnaround Time**: **{tat["mean"]} hours**
+- **90th Percentile Turnaround Time (p90)**: **{tat["p90"]} hours**
+- **SLA Breaches**: **{op["sla_breaches"]:,} cases** breached the operational SLA threshold ({op["sla_breach_rate_pct"]}% of closed cases).
 
 ---
 

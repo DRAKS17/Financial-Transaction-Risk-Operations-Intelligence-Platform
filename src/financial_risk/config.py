@@ -33,10 +33,14 @@ DB_NAME = os.getenv("DB_NAME", "financial_risk_analytics")
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 
+
 # Database connection URL
 def get_db_url() -> str:
     """Generate SQLAlchemy connection URL."""
-    return f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    return (
+        f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    )
+
 
 # Operational & Modeling Constants
 RANDOM_STATE = 42

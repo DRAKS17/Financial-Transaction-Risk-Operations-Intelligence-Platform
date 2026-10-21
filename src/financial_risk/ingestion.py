@@ -19,7 +19,9 @@ from typing import Any
 
 from financial_risk.config import DATA_RAW_DIR
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 PAYSIM_URL = "https://huggingface.co/datasets/theman10/paysim/resolve/main/paysim.csv"
@@ -37,10 +39,14 @@ def compute_sha256(file_path: Path, chunk_size: int = 1024 * 1024) -> str:
     return sha256.hexdigest()
 
 
-def download_paysim_dataset(url: str = PAYSIM_URL, dest_path: Path = PAYSIM_RAW_PATH) -> Path:
+def download_paysim_dataset(
+    url: str = PAYSIM_URL, dest_path: Path = PAYSIM_RAW_PATH
+) -> Path:
     """Download the PaySim transaction CSV with chunked streaming and progress logging."""
     if dest_path.exists() and dest_path.stat().st_size > 400_000_000:
-        logger.info(f"PaySim raw dataset already exists at {dest_path} ({dest_path.stat().st_size:,} bytes). Skipping download.")
+        logger.info(
+            f"PaySim raw dataset already exists at {dest_path} ({dest_path.stat().st_size:,} bytes). Skipping download."
+        )
         return dest_path
 
     logger.info(f"Downloading PaySim transaction dataset from {url}...")
@@ -65,11 +71,15 @@ def download_paysim_dataset(url: str = PAYSIM_URL, dest_path: Path = PAYSIM_RAW_
                 mb_downloaded = downloaded / (1024 * 1024)
                 mb_total = total_size / (1024 * 1024)
                 if int(pct) % 20 == 0:
-                    logger.info(f"Download progress: {mb_downloaded:.1f}/{mb_total:.1f} MB ({pct:.1f}%)")
+                    logger.info(
+                        f"Download progress: {mb_downloaded:.1f}/{mb_total:.1f} MB ({pct:.1f}%)"
+                    )
 
     temp_path.replace(dest_path)
     elapsed = time.time() - start_time
-    logger.info(f"Download complete in {elapsed:.1f}s. Saved to {dest_path} ({dest_path.stat().st_size:,} bytes).")
+    logger.info(
+        f"Download complete in {elapsed:.1f}s. Saved to {dest_path} ({dest_path.stat().st_size:,} bytes)."
+    )
     return dest_path
 
 
@@ -88,10 +98,14 @@ def generate_synthetic_investigation_cases(
     - Plausible turnaround times and resolution statuses
     """
     if output_path.exists() and output_path.stat().st_size > 100_000:
-        logger.info(f"Synthetic investigation cases already exist at {output_path}. Skipping generation.")
+        logger.info(
+            f"Synthetic investigation cases already exist at {output_path}. Skipping generation."
+        )
         return output_path
 
-    logger.info(f"Sampling transactions from {paysim_path} to generate linked investigation cases...")
+    logger.info(
+        f"Sampling transactions from {paysim_path} to generate linked investigation cases..."
+    )
     random.seed(random_seed)
 
     flagged_txs: list[dict[str, Any]] = []
@@ -118,7 +132,12 @@ def generate_synthetic_investigation_cases(
 
     logger.info(f"Generating {len(selected)} operational investigation records...")
 
-    statuses = ["CLOSED_CONFIRMED_FRAUD", "CLOSED_FALSE_POSITIVE", "UNDER_REVIEW", "OPEN"]
+    statuses = [
+        "CLOSED_CONFIRMED_FRAUD",
+        "CLOSED_FALSE_POSITIVE",
+        "UNDER_REVIEW",
+        "OPEN",
+    ]
 
     note_templates = [
         "Rapid account depletion noted. Immediate verification initiated for customer {nameOrig}.",
@@ -163,12 +182,16 @@ def generate_synthetic_investigation_cases(
             amount = float(tx["amount"])
 
             # Create timestamp based on step (step 1 = 1 hour past base_time)
-            created_at = base_time + timedelta(hours=step, minutes=random.randint(5, 55))
+            created_at = base_time + timedelta(
+                hours=step, minutes=random.randint(5, 55)
+            )
 
             # Realistic priority assignment
             if amount > 500_000 or tx["isFraud"] == "1":
                 priority = "P1_CRITICAL"
-                team = random.choice(["Senior Fraud Risk", "Special Investigations Unit (SIU)"])
+                team = random.choice(
+                    ["Senior Fraud Risk", "Special Investigations Unit (SIU)"]
+                )
             elif amount > 100_000:
                 priority = "P2_HIGH"
                 team = random.choice(["Tier 1 Operations", "Senior Fraud Risk"])
@@ -218,7 +241,9 @@ def generate_synthetic_investigation_cases(
                 }
             )
 
-    logger.info(f"Synthetic case records saved to {output_path} ({output_path.stat().st_size:,} bytes).")
+    logger.info(
+        f"Synthetic case records saved to {output_path} ({output_path.stat().st_size:,} bytes)."
+    )
     return output_path
 
 
