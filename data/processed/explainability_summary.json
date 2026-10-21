@@ -1,0 +1,587 @@
+{
+  "metadata": {
+    "timestamp": "2026-10-21 17:38:58",
+    "model_analyzed": "champion_lightgbm_tuned.joblib",
+    "tree_explainer_base_value": -15.5119,
+    "base_fraud_probability": 1.8e-07,
+    "global_sample_size": 4000,
+    "shap_computation_time_seconds": 0.45,
+    "total_pipeline_time_seconds": 3.42
+  },
+  "global_feature_attributions": [
+    {
+      "rank": 1,
+      "feature": "newbalanceOrig",
+      "mean_absolute_shap": 14.7359,
+      "std_shap": 19.9434,
+      "global_importance_pct": 40.6,
+      "reason_code": "RC_ZERO_RESIDUAL_LIQUIDITY",
+      "description": "Post-transaction sender balance leaves zero residual operating liquidity."
+    },
+    {
+      "rank": 2,
+      "feature": "orig_balance_discrepancy",
+      "mean_absolute_shap": 12.5779,
+      "std_shap": 19.1561,
+      "global_importance_pct": 34.65,
+      "reason_code": "RC_LEDGER_DISCREPANCY",
+      "description": "Severe ledger arithmetic discrepancy detected between origin pre-balance, transfer amount, and post-balance."
+    },
+    {
+      "rank": 3,
+      "feature": "amount_to_orig_balance_ratio",
+      "mean_absolute_shap": 1.8324,
+      "std_shap": 5.8514,
+      "global_importance_pct": 5.05,
+      "reason_code": "RC_EXCESSIVE_BALANCE_RATIO",
+      "description": "Transaction amount exhausts 100% of available origin ledger liquidity."
+    },
+    {
+      "rank": 4,
+      "feature": "orig_depletion_complete",
+      "mean_absolute_shap": 1.8245,
+      "std_shap": 6.6535,
+      "global_importance_pct": 5.03,
+      "reason_code": "RC_COMPLETE_DRAIN",
+      "description": "Sender account origin balance liquidated to exactly zero in a single transaction."
+    },
+    {
+      "rank": 5,
+      "feature": "log_amount",
+      "mean_absolute_shap": 1.3158,
+      "std_shap": 4.3375,
+      "global_importance_pct": 3.63,
+      "reason_code": "RC_HIGH_VALUE_EXPOSURE",
+      "description": "Transaction monetary magnitude falls into extreme top Pareto loss decile."
+    },
+    {
+      "rank": 6,
+      "feature": "oldbalanceOrg",
+      "mean_absolute_shap": 0.9625,
+      "std_shap": 2.085,
+      "global_importance_pct": 2.65,
+      "reason_code": "RC_ORIGIN_BALANCE_SCALE",
+      "description": "Sender origin pre-transaction baseline capitalization scale."
+    },
+    {
+      "rank": 7,
+      "feature": "cos_hour",
+      "mean_absolute_shap": 0.453,
+      "std_shap": 1.1218,
+      "global_importance_pct": 1.25,
+      "reason_code": "RC_DIURNAL_CYCLICAL",
+      "description": "Cyclical time-of-day harmonic coincides with peak coordinated attack velocity."
+    },
+    {
+      "rank": 8,
+      "feature": "oldbalanceDest",
+      "mean_absolute_shap": 0.4034,
+      "std_shap": 0.623,
+      "global_importance_pct": 1.11,
+      "reason_code": "RC_DEST_PRE_LIQUIDITY",
+      "description": "Recipient destination baseline prior capital level."
+    },
+    {
+      "rank": 9,
+      "feature": "is_cash_out",
+      "mean_absolute_shap": 0.4025,
+      "std_shap": 0.4725,
+      "global_importance_pct": 1.11,
+      "reason_code": "RC_CASHOUT_TYPOLOGY",
+      "description": "Fund movement routed through rapid off-ramp cash withdrawal endpoint."
+    },
+    {
+      "rank": 10,
+      "feature": "dest_balance_discrepancy",
+      "mean_absolute_shap": 0.3473,
+      "std_shap": 0.7523,
+      "global_importance_pct": 0.96,
+      "reason_code": "RC_DEST_BALANCE_MISMATCH",
+      "description": "Recipient destination ledger balance discrepancy post-transfer."
+    },
+    {
+      "rank": 11,
+      "feature": "is_night_hours",
+      "mean_absolute_shap": 0.3265,
+      "std_shap": 1.6617,
+      "global_importance_pct": 0.9,
+      "reason_code": "RC_NOCTURNAL_EXECUTION",
+      "description": "Transaction initiated during high-vulnerability diurnal window (01:00 AM - 05:00 AM)."
+    },
+    {
+      "rank": 12,
+      "feature": "newbalanceDest",
+      "mean_absolute_shap": 0.3125,
+      "std_shap": 0.6683,
+      "global_importance_pct": 0.86,
+      "reason_code": "RC_DEST_ACCUMULATION",
+      "description": "Destination account accumulated capital post-transaction."
+    },
+    {
+      "rank": 13,
+      "feature": "dest_inbound_prior_count",
+      "mean_absolute_shap": 0.2976,
+      "std_shap": 0.4203,
+      "global_importance_pct": 0.82,
+      "reason_code": "RC_MULE_FANIN_HUB",
+      "description": "Destination account exhibits anomalous rapid inbound fan-in velocity without prior history."
+    },
+    {
+      "rank": 14,
+      "feature": "is_merchant_dest",
+      "mean_absolute_shap": 0.2213,
+      "std_shap": 0.252,
+      "global_importance_pct": 0.61,
+      "reason_code": "RC_MERCHANT_ENDPOINT",
+      "description": "Counterparty destination flagged as verified commercial merchant terminal."
+    },
+    {
+      "rank": 15,
+      "feature": "sin_hour",
+      "mean_absolute_shap": 0.1623,
+      "std_shap": 0.2646,
+      "global_importance_pct": 0.45,
+      "reason_code": "RC_TEMPORAL_PHASE",
+      "description": "Diurnal sinusoidal phase alignment."
+    },
+    {
+      "rank": 16,
+      "feature": "is_transfer",
+      "mean_absolute_shap": 0.1194,
+      "std_shap": 0.2678,
+      "global_importance_pct": 0.33,
+      "reason_code": "RC_TRANSFER_TYPOLOGY",
+      "description": "Fund movement routed through uncollateralized electronic wire transfer corridor."
+    }
+  ],
+  "case_studies": {
+    "Case 1: High-Value Account Drain Fraud": {
+      "transaction_id": 6272933,
+      "type": "TRANSFER",
+      "amount": 6870369.62,
+      "hour_of_day": 0,
+      "is_fraud_ground_truth": 1,
+      "predicted_fraud_probability": 1.0,
+      "model_raw_log_odds": 94.4648,
+      "base_expected_log_odds": -15.5119,
+      "efficiency_axiom_verified": true,
+      "reconstruction_error": 0.0,
+      "primary_adverse_reason_codes": [
+        {
+          "feature": "orig_balance_discrepancy",
+          "feature_value": 0.0,
+          "shap_value": 34.7867,
+          "relative_impact_pct": 29.28,
+          "reason_code": "RC_LEDGER_DISCREPANCY",
+          "description": "Severe ledger arithmetic discrepancy detected between origin pre-balance, transfer amount, and post-balance.",
+          "direction": "ESCALATES_RISK"
+        },
+        {
+          "feature": "orig_depletion_complete",
+          "feature_value": 1.0,
+          "shap_value": 26.2258,
+          "relative_impact_pct": 22.07,
+          "reason_code": "RC_COMPLETE_DRAIN",
+          "description": "Sender account origin balance liquidated to exactly zero in a single transaction.",
+          "direction": "ESCALATES_RISK"
+        },
+        {
+          "feature": "newbalanceOrig",
+          "feature_value": 0.0,
+          "shap_value": 13.8988,
+          "relative_impact_pct": 11.7,
+          "reason_code": "RC_ZERO_RESIDUAL_LIQUIDITY",
+          "description": "Post-transaction sender balance leaves zero residual operating liquidity.",
+          "direction": "ESCALATES_RISK"
+        },
+        {
+          "feature": "is_night_hours",
+          "feature_value": 1.0,
+          "shap_value": 12.7782,
+          "relative_impact_pct": 10.76,
+          "reason_code": "RC_NOCTURNAL_EXECUTION",
+          "description": "Transaction initiated during high-vulnerability diurnal window (01:00 AM - 05:00 AM).",
+          "direction": "ESCALATES_RISK"
+        }
+      ],
+      "primary_mitigating_factors": [
+        {
+          "feature": "oldbalanceOrg",
+          "feature_value": 6870369.5,
+          "shap_value": -2.4837,
+          "relative_impact_pct": 2.09,
+          "reason_code": "RC_ORIGIN_BALANCE_SCALE",
+          "description": "Sender origin pre-transaction baseline capitalization scale.",
+          "direction": "MITIGATES_RISK"
+        },
+        {
+          "feature": "log_amount",
+          "feature_value": 15.742728233337402,
+          "shap_value": -1.7848,
+          "relative_impact_pct": 1.5,
+          "reason_code": "RC_HIGH_VALUE_EXPOSURE",
+          "description": "Transaction monetary magnitude falls into extreme top Pareto loss decile.",
+          "direction": "MITIGATES_RISK"
+        },
+        {
+          "feature": "is_cash_out",
+          "feature_value": 0.0,
+          "shap_value": -0.1063,
+          "relative_impact_pct": 0.09,
+          "reason_code": "RC_CASHOUT_TYPOLOGY",
+          "description": "Fund movement routed through rapid off-ramp cash withdrawal endpoint.",
+          "direction": "MITIGATES_RISK"
+        },
+        {
+          "feature": "sin_hour",
+          "feature_value": 0.0,
+          "shap_value": -0.0408,
+          "relative_impact_pct": 0.03,
+          "reason_code": "RC_TEMPORAL_PHASE",
+          "description": "Diurnal sinusoidal phase alignment.",
+          "direction": "MITIGATES_RISK"
+        }
+      ],
+      "all_feature_shap_values": {
+        "log_amount": -1.7848,
+        "oldbalanceOrg": -2.4837,
+        "newbalanceOrig": 13.8988,
+        "amount_to_orig_balance_ratio": 8.3877,
+        "orig_depletion_complete": 26.2258,
+        "orig_balance_discrepancy": 34.7867,
+        "oldbalanceDest": 3.0851,
+        "newbalanceDest": 3.2707,
+        "dest_balance_discrepancy": 3.39,
+        "dest_inbound_prior_count": 1.4808,
+        "is_transfer": 0.6125,
+        "is_cash_out": -0.1063,
+        "is_merchant_dest": 0.5385,
+        "is_night_hours": 12.7782,
+        "sin_hour": -0.0408,
+        "cos_hour": 5.9374
+      }
+    },
+    "Case 2: Nocturnal Transfer Fraud (03:00 AM)": {
+      "transaction_id": 6272967,
+      "type": "TRANSFER",
+      "amount": 99165.12,
+      "hour_of_day": 3,
+      "is_fraud_ground_truth": 1,
+      "predicted_fraud_probability": 1.0,
+      "model_raw_log_odds": 82.7834,
+      "base_expected_log_odds": -15.5119,
+      "efficiency_axiom_verified": true,
+      "reconstruction_error": 0.0,
+      "primary_adverse_reason_codes": [
+        {
+          "feature": "orig_balance_discrepancy",
+          "feature_value": 0.0,
+          "shap_value": 42.9789,
+          "relative_impact_pct": 43.44,
+          "reason_code": "RC_LEDGER_DISCREPANCY",
+          "description": "Severe ledger arithmetic discrepancy detected between origin pre-balance, transfer amount, and post-balance.",
+          "direction": "ESCALATES_RISK"
+        },
+        {
+          "feature": "orig_depletion_complete",
+          "feature_value": 1.0,
+          "shap_value": 27.7311,
+          "relative_impact_pct": 28.03,
+          "reason_code": "RC_COMPLETE_DRAIN",
+          "description": "Sender account origin balance liquidated to exactly zero in a single transaction.",
+          "direction": "ESCALATES_RISK"
+        },
+        {
+          "feature": "newbalanceOrig",
+          "feature_value": 0.0,
+          "shap_value": 23.8925,
+          "relative_impact_pct": 24.15,
+          "reason_code": "RC_ZERO_RESIDUAL_LIQUIDITY",
+          "description": "Post-transaction sender balance leaves zero residual operating liquidity.",
+          "direction": "ESCALATES_RISK"
+        },
+        {
+          "feature": "is_night_hours",
+          "feature_value": 1.0,
+          "shap_value": 1.8266,
+          "relative_impact_pct": 1.85,
+          "reason_code": "RC_NOCTURNAL_EXECUTION",
+          "description": "Transaction initiated during high-vulnerability diurnal window (01:00 AM - 05:00 AM).",
+          "direction": "ESCALATES_RISK"
+        }
+      ],
+      "primary_mitigating_factors": [
+        {
+          "feature": "is_cash_out",
+          "feature_value": 0.0,
+          "shap_value": -0.227,
+          "relative_impact_pct": 0.23,
+          "reason_code": "RC_CASHOUT_TYPOLOGY",
+          "description": "Fund movement routed through rapid off-ramp cash withdrawal endpoint.",
+          "direction": "MITIGATES_RISK"
+        },
+        {
+          "feature": "oldbalanceOrg",
+          "feature_value": 99165.1171875,
+          "shap_value": -0.0435,
+          "relative_impact_pct": 0.04,
+          "reason_code": "RC_ORIGIN_BALANCE_SCALE",
+          "description": "Sender origin pre-transaction baseline capitalization scale.",
+          "direction": "MITIGATES_RISK"
+        },
+        {
+          "feature": "log_amount",
+          "feature_value": 11.504551887512207,
+          "shap_value": -0.0286,
+          "relative_impact_pct": 0.03,
+          "reason_code": "RC_HIGH_VALUE_EXPOSURE",
+          "description": "Transaction monetary magnitude falls into extreme top Pareto loss decile.",
+          "direction": "MITIGATES_RISK"
+        },
+        {
+          "feature": "sin_hour",
+          "feature_value": 0.7071067690849304,
+          "shap_value": -0.0281,
+          "relative_impact_pct": 0.03,
+          "reason_code": "RC_TEMPORAL_PHASE",
+          "description": "Diurnal sinusoidal phase alignment.",
+          "direction": "MITIGATES_RISK"
+        }
+      ],
+      "all_feature_shap_values": {
+        "log_amount": -0.0286,
+        "oldbalanceOrg": -0.0435,
+        "newbalanceOrig": 23.8925,
+        "amount_to_orig_balance_ratio": 0.0214,
+        "orig_depletion_complete": 27.7311,
+        "orig_balance_discrepancy": 42.9789,
+        "oldbalanceDest": 0.5541,
+        "newbalanceDest": 0.1016,
+        "dest_balance_discrepancy": 0.2121,
+        "dest_inbound_prior_count": 0.1825,
+        "is_transfer": 0.4411,
+        "is_cash_out": -0.227,
+        "is_merchant_dest": 0.5306,
+        "is_night_hours": 1.8266,
+        "sin_hour": -0.0281,
+        "cos_hour": 0.1497
+      }
+    },
+    "Case 3: Benign High-Value Commercial Transaction": {
+      "transaction_id": 6273082,
+      "type": "CASH_IN",
+      "amount": 512450.4,
+      "hour_of_day": 5,
+      "is_fraud_ground_truth": 0,
+      "predicted_fraud_probability": 0.0,
+      "model_raw_log_odds": -19.5053,
+      "base_expected_log_odds": -15.5119,
+      "efficiency_axiom_verified": true,
+      "reconstruction_error": 0.0,
+      "primary_adverse_reason_codes": [
+        {
+          "feature": "is_night_hours",
+          "feature_value": 1.0,
+          "shap_value": 2.2763,
+          "relative_impact_pct": 23.67,
+          "reason_code": "RC_NOCTURNAL_EXECUTION",
+          "description": "Transaction initiated during high-vulnerability diurnal window (01:00 AM - 05:00 AM).",
+          "direction": "ESCALATES_RISK"
+        },
+        {
+          "feature": "cos_hour",
+          "feature_value": 0.258819043636322,
+          "shap_value": 0.2062,
+          "relative_impact_pct": 2.14,
+          "reason_code": "RC_DIURNAL_CYCLICAL",
+          "description": "Cyclical time-of-day harmonic coincides with peak coordinated attack velocity.",
+          "direction": "ESCALATES_RISK"
+        },
+        {
+          "feature": "sin_hour",
+          "feature_value": 0.9659258127212524,
+          "shap_value": 0.1684,
+          "relative_impact_pct": 1.75,
+          "reason_code": "RC_TEMPORAL_PHASE",
+          "description": "Diurnal sinusoidal phase alignment.",
+          "direction": "ESCALATES_RISK"
+        },
+        {
+          "feature": "is_merchant_dest",
+          "feature_value": 0.0,
+          "shap_value": 0.1523,
+          "relative_impact_pct": 1.58,
+          "reason_code": "RC_MERCHANT_ENDPOINT",
+          "description": "Counterparty destination flagged as verified commercial merchant terminal.",
+          "direction": "ESCALATES_RISK"
+        }
+      ],
+      "primary_mitigating_factors": [
+        {
+          "feature": "oldbalanceOrg",
+          "feature_value": 4260873.5,
+          "shap_value": -2.34,
+          "relative_impact_pct": 24.33,
+          "reason_code": "RC_ORIGIN_BALANCE_SCALE",
+          "description": "Sender origin pre-transaction baseline capitalization scale.",
+          "direction": "MITIGATES_RISK"
+        },
+        {
+          "feature": "dest_balance_discrepancy",
+          "feature_value": 1024900.8125,
+          "shap_value": -1.8799,
+          "relative_impact_pct": 19.55,
+          "reason_code": "RC_DEST_BALANCE_MISMATCH",
+          "description": "Recipient destination ledger balance discrepancy post-transfer.",
+          "direction": "MITIGATES_RISK"
+        },
+        {
+          "feature": "orig_balance_discrepancy",
+          "feature_value": -1024900.8125,
+          "shap_value": -0.6888,
+          "relative_impact_pct": 7.16,
+          "reason_code": "RC_LEDGER_DISCREPANCY",
+          "description": "Severe ledger arithmetic discrepancy detected between origin pre-balance, transfer amount, and post-balance.",
+          "direction": "MITIGATES_RISK"
+        },
+        {
+          "feature": "orig_depletion_complete",
+          "feature_value": 0.0,
+          "shap_value": -0.5773,
+          "relative_impact_pct": 6.0,
+          "reason_code": "RC_COMPLETE_DRAIN",
+          "description": "Sender account origin balance liquidated to exactly zero in a single transaction.",
+          "direction": "MITIGATES_RISK"
+        }
+      ],
+      "all_feature_shap_values": {
+        "log_amount": -0.0138,
+        "oldbalanceOrg": -2.34,
+        "newbalanceOrig": -0.4109,
+        "amount_to_orig_balance_ratio": 0.0086,
+        "orig_depletion_complete": -0.5773,
+        "orig_balance_discrepancy": -0.6888,
+        "oldbalanceDest": -0.2003,
+        "newbalanceDest": -0.0598,
+        "dest_balance_discrepancy": -1.8799,
+        "dest_inbound_prior_count": -0.3677,
+        "is_transfer": -0.0638,
+        "is_cash_out": -0.203,
+        "is_merchant_dest": 0.1523,
+        "is_night_hours": 2.2763,
+        "sin_hour": 0.1684,
+        "cos_hour": 0.2062
+      }
+    },
+    "Case 4: Borderline Triage Investigation Case": {
+      "transaction_id": 6281485,
+      "type": "TRANSFER",
+      "amount": 399045.08,
+      "hour_of_day": 21,
+      "is_fraud_ground_truth": 1,
+      "predicted_fraud_probability": 1.9e-05,
+      "model_raw_log_odds": -10.8841,
+      "base_expected_log_odds": -15.5119,
+      "efficiency_axiom_verified": true,
+      "reconstruction_error": 0.0,
+      "primary_adverse_reason_codes": [
+        {
+          "feature": "dest_balance_discrepancy",
+          "feature_value": 399045.09375,
+          "shap_value": 1.873,
+          "relative_impact_pct": 21.87,
+          "reason_code": "RC_DEST_BALANCE_MISMATCH",
+          "description": "Recipient destination ledger balance discrepancy post-transfer.",
+          "direction": "ESCALATES_RISK"
+        },
+        {
+          "feature": "is_transfer",
+          "feature_value": 1.0,
+          "shap_value": 1.3932,
+          "relative_impact_pct": 16.27,
+          "reason_code": "RC_TRANSFER_TYPOLOGY",
+          "description": "Fund movement routed through uncollateralized electronic wire transfer corridor.",
+          "direction": "ESCALATES_RISK"
+        },
+        {
+          "feature": "newbalanceDest",
+          "feature_value": 0.0,
+          "shap_value": 1.0334,
+          "relative_impact_pct": 12.07,
+          "reason_code": "RC_DEST_ACCUMULATION",
+          "description": "Destination account accumulated capital post-transaction.",
+          "direction": "ESCALATES_RISK"
+        },
+        {
+          "feature": "dest_inbound_prior_count",
+          "feature_value": 0.0,
+          "shap_value": 0.8721,
+          "relative_impact_pct": 10.18,
+          "reason_code": "RC_MULE_FANIN_HUB",
+          "description": "Destination account exhibits anomalous rapid inbound fan-in velocity without prior history.",
+          "direction": "ESCALATES_RISK"
+        }
+      ],
+      "primary_mitigating_factors": [
+        {
+          "feature": "oldbalanceOrg",
+          "feature_value": 10399045.0,
+          "shap_value": -1.2429,
+          "relative_impact_pct": 14.51,
+          "reason_code": "RC_ORIGIN_BALANCE_SCALE",
+          "description": "Sender origin pre-transaction baseline capitalization scale.",
+          "direction": "MITIGATES_RISK"
+        },
+        {
+          "feature": "log_amount",
+          "feature_value": 12.896832466125488,
+          "shap_value": -0.2752,
+          "relative_impact_pct": 3.21,
+          "reason_code": "RC_HIGH_VALUE_EXPOSURE",
+          "description": "Transaction monetary magnitude falls into extreme top Pareto loss decile.",
+          "direction": "MITIGATES_RISK"
+        },
+        {
+          "feature": "newbalanceOrig",
+          "feature_value": 10399045.0,
+          "shap_value": -0.1938,
+          "relative_impact_pct": 2.26,
+          "reason_code": "RC_ZERO_RESIDUAL_LIQUIDITY",
+          "description": "Post-transaction sender balance leaves zero residual operating liquidity.",
+          "direction": "MITIGATES_RISK"
+        },
+        {
+          "feature": "is_cash_out",
+          "feature_value": 0.0,
+          "shap_value": -0.1395,
+          "relative_impact_pct": 1.63,
+          "reason_code": "RC_CASHOUT_TYPOLOGY",
+          "description": "Fund movement routed through rapid off-ramp cash withdrawal endpoint.",
+          "direction": "MITIGATES_RISK"
+        }
+      ],
+      "all_feature_shap_values": {
+        "log_amount": -0.2752,
+        "oldbalanceOrg": -1.2429,
+        "newbalanceOrig": -0.1938,
+        "amount_to_orig_balance_ratio": 0.4398,
+        "orig_depletion_complete": -0.0079,
+        "orig_balance_discrepancy": 0.0775,
+        "oldbalanceDest": 0.6372,
+        "newbalanceDest": 1.0334,
+        "dest_balance_discrepancy": 1.873,
+        "dest_inbound_prior_count": 0.8721,
+        "is_transfer": 1.3932,
+        "is_cash_out": -0.1395,
+        "is_merchant_dest": 0.138,
+        "is_night_hours": -0.0194,
+        "sin_hour": -0.0896,
+        "cos_hour": 0.1318
+      }
+    }
+  },
+  "figures_generated": [
+    "fig_12_shap_global_summary.png",
+    "fig_13_shap_local_waterfalls.png"
+  ]
+}
