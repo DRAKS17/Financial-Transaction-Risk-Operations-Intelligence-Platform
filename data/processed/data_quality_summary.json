@@ -1,0 +1,147 @@
+{
+  "transactions": {
+    "total_rows": 6362620,
+    "total_columns": 11,
+    "columns": [
+      "step",
+      "type",
+      "amount",
+      "nameOrig",
+      "oldbalanceOrg",
+      "newbalanceOrig",
+      "nameDest",
+      "oldbalanceDest",
+      "newbalanceDest",
+      "isFraud",
+      "isFlaggedFraud"
+    ],
+    "null_counts": {
+      "step": 0,
+      "type": 0,
+      "amount": 0,
+      "nameOrig": 0,
+      "oldbalanceOrg": 0,
+      "newbalanceOrig": 0,
+      "nameDest": 0,
+      "oldbalanceDest": 0,
+      "newbalanceDest": 0,
+      "isFraud": 0,
+      "isFlaggedFraud": 0
+    },
+    "type_counts": {
+      "CASH_OUT": 2237500,
+      "PAYMENT": 2151495,
+      "CASH_IN": 1399284,
+      "TRANSFER": 532909,
+      "DEBIT": 41432
+    },
+    "fraud_by_type": {
+      "CASH_OUT": 4116,
+      "TRANSFER": 4097,
+      "CASH_IN": 0,
+      "DEBIT": 0,
+      "PAYMENT": 0
+    },
+    "flagged_by_type": {
+      "CASH_IN": 0,
+      "CASH_OUT": 0,
+      "DEBIT": 0,
+      "PAYMENT": 0,
+      "TRANSFER": 16
+    },
+    "total_fraud": 8213,
+    "total_flagged": 16,
+    "fraud_rate_pct": 0.1291,
+    "flagged_rate_pct": 0.000251,
+    "amount_distribution": {
+      "min": 0.0,
+      "p25": 13200.45,
+      "median": 74700.06,
+      "mean": 179861.9,
+      "p75": 208666.66,
+      "p95": 509536.17,
+      "p99": 1655085.34,
+      "max": 92445516.64,
+      "total_sum": 1144392944759.77,
+      "zero_count": 16,
+      "negative_count": 0
+    },
+    "financial_balance_anomalies": {
+      "origin_zero_oldbalance_count": 2102449,
+      "origin_zero_oldbalance_pct": 33.04,
+      "dest_zero_oldbalance_count": 2704388,
+      "dest_zero_oldbalance_pct": 42.5,
+      "origin_balance_formula_violations": 3678407,
+      "origin_balance_formula_violation_pct": 57.81,
+      "dest_balance_formula_violations": 1520095,
+      "dest_balance_formula_violation_pct": 23.89
+    },
+    "destination_entities": {
+      "merchant_destinations": 2151495,
+      "merchant_destinations_pct": 33.81,
+      "customer_destinations": 4211125,
+      "customer_destinations_pct": 66.19
+    },
+    "fraud_amounts": {
+      "fraud_amount_sum": 12056415427.84,
+      "benign_amount_sum": 1132336529331.93,
+      "mean_fraud_amount": 1467967.3,
+      "mean_benign_amount": 178197.04
+    },
+    "profiling_duration_seconds": 9.15
+  },
+  "investigations": {
+    "total_cases": 5000,
+    "total_columns": 11,
+    "columns": [
+      "case_id",
+      "linked_transaction_id",
+      "tx_step",
+      "tx_type",
+      "tx_amount",
+      "case_created_at",
+      "case_status",
+      "priority",
+      "assigned_team",
+      "investigation_notes",
+      "closed_at"
+    ],
+    "null_counts": {
+      "case_id": 0,
+      "linked_transaction_id": 0,
+      "tx_step": 0,
+      "tx_type": 0,
+      "tx_amount": 0,
+      "case_created_at": 0,
+      "case_status": 0,
+      "priority": 0,
+      "assigned_team": 0,
+      "investigation_notes": 887,
+      "closed_at": 1142
+    },
+    "status_distribution": {
+      "CLOSED_FALSE_POSITIVE": 2656,
+      "CLOSED_CONFIRMED_FRAUD": 1202,
+      "UNDER_REVIEW": 701,
+      "OPEN": 441
+    },
+    "priority_distribution": {
+      "P1_CRITICAL": 3171,
+      "P3_STANDARD": 1107,
+      "P2_HIGH": 722
+    },
+    "assigned_team_distribution": {
+      "Senior Fraud Risk": 1925,
+      "Special Investigations Unit (SIU)": 1599,
+      "Tier 1 Operations": 1476
+    },
+    "text_quality_defects": {
+      "missing_notes_count": 887,
+      "empty_notes_count": 887,
+      "whitespace_defect_count": 403,
+      "uppercase_defect_count": 428
+    },
+    "referential_integrity_valid": true
+  },
+  "generated_at": "2026-10-21 04:48:29 UTC"
+}
