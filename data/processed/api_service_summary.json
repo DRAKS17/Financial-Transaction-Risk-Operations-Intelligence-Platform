@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "timestamp": "2026-10-21 17:50:52",
+    "n_requests_scored": 1000,
+    "n_requests_explained": 200,
+    "cpu_architecture": "Multi-Core x86_64"
+  },
+  "scoring_latency_ms": {
+    "mean": 0.576,
+    "median_p50": 0.506,
+    "p95": 0.888,
+    "p99": 1.045,
+    "min": 0.447,
+    "max": 2.661,
+    "throughput_req_per_sec": 1735.7
+  },
+  "explain_latency_ms": {
+    "mean": 7.068,
+    "median_p50": 7.081,
+    "p95": 7.99,
+    "p99": 8.702,
+    "throughput_req_per_sec": 141.5
+  }
+}
